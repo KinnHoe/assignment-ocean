@@ -5,30 +5,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/home"
-        android:icon="@drawable/home"
+        android:icon="@drawable/ic_home"
         android:title="Home" />
     <item
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/event"
-        android:icon="@drawable/event"
+        android:icon="@drawable/ic_event"
         android:title="Event" />
     <item
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/addPost"
-        android:icon="@drawable/add"
+        android:icon="@drawable/ic_add"
         android:title="AddPost" />
     <item
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/moment"
-        android:icon="@drawable/moment"
+        android:icon="@drawable/ic_moment"
         android:title="Moment" />
     <item
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/oceanLife"
-        android:icon="@drawable/boat"
+        android:icon="@drawable/ic_boat"
         android:title="OceanLife" />
 </menu>
