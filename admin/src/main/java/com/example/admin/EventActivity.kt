@@ -148,8 +148,6 @@ class EventActivity : AppCompatActivity() {
     }
     private fun saveEventData(){
 
-
-
         val eventTitle = findViewById<TextView>(R.id.uploadEventTitle).text.toString()
         val eventDecs = findViewById<TextView>(R.id.uploadEventDesc).text.toString()
 

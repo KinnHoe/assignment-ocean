@@ -40,7 +40,7 @@
             android:paddingBottom="0dp"
             android:text="Event Date"
             android:textColor="@color/grey"
-            android:textSize="20dp" />
+            android:textSize="13dp" />
 
 
         <TextView
@@ -58,11 +58,12 @@
             android:paddingBottom="5dp"
             android:text="Event Title"
             android:textColor="@color/white"
-            android:textSize="20dp"
+            android:textSize="25dp"
             android:textStyle="bold" />
 
 
         <Button
+            android:id="@+id/interestedEventBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
@@ -70,7 +71,9 @@
             android:fontFamily="@font/baloo_paaji_2_bold"
             android:text="Interested"
             android:textColor="@color/darkgrey"
-            android:textSize="20dp" />
+            android:layout_margin="10dp"
+            android:padding="7dp"
+            android:textSize="13dp" />
 
 
 

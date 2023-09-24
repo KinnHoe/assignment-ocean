@@ -1,16 +1,19 @@
 package com.example.assignment_ocean.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assignment_ocean.data.EventModel
 import com.example.assignment_ocean.R
 import com.google.android.material.imageview.ShapeableImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-
+import com.example.assignment_ocean.EventDetail
 
 
 class EventAdapter(private val eventList: ArrayList<EventModel>) : RecyclerView.Adapter<EventAdapter.MyViewHolder>(){
@@ -39,7 +42,16 @@ class EventAdapter(private val eventList: ArrayList<EventModel>) : RecyclerView.
         holder.eventTitle.text = currentEvent.eventTitle
         holder.eventDate.text = currentEvent.eventDate
 
+        holder.interestedEvent.setOnClickListener {
+            val context = holder.itemView.context
+            val intent = Intent(context, EventDetail::class.java)
+            intent.putExtra("eventTitle", currentEvent.eventTitle)
+            context.startActivity(intent)
+        }
+
+
     }
+
     override fun getItemCount(): Int {
         return eventList.size
     }
@@ -51,6 +63,7 @@ class EventAdapter(private val eventList: ArrayList<EventModel>) : RecyclerView.
         val eventImage = itemView.findViewById<ShapeableImageView>(R.id.EventImg)
         val eventDate : TextView = itemView.findViewById(R.id.EventDate)
         val eventTitle : TextView = itemView.findViewById(R.id.EventTitle)
+        val interestedEvent : Button = itemView.findViewById(R.id.interestedEventBtn)
     }
 
 }
