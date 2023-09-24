@@ -1,30 +1,35 @@
 package com.example.assignment_ocean
 
 import android.os.Bundle
-import android.provider.CalendarContract.Events
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.assignment_ocean.adapter.EventAdapter
+import com.example.assignment_ocean.data.EventModel
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+
 
 
 class Event : Fragment() {
 
-
+    private lateinit var dbref : DatabaseReference
     private lateinit var adapter : EventAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var eventArrayList : ArrayList<EventModel>
 
-    lateinit var imageId : Array<Int>
-    lateinit var title : Array<String>
-    lateinit var date : Array<String>
-    lateinit var events : Array<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        eventArrayList = arrayListOf<EventModel>()
+        getUserData()
 
     }
 
@@ -38,7 +43,7 @@ class Event : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dataInitialize()
+
         val layoutManager = GridLayoutManager(context, 2)
         recyclerView = view.findViewById(R.id.recycleView)
         recyclerView.layoutManager = layoutManager
@@ -46,55 +51,40 @@ class Event : Fragment() {
         adapter = EventAdapter(eventArrayList)
         recyclerView.adapter = adapter
 
+
     }
 
 
-    private fun dataInitialize(){
-        eventArrayList = arrayListOf<EventModel>()
+    private fun getUserData(){
+        dbref = FirebaseDatabase.getInstance().getReference("events")
 
-        imageId = arrayOf(
-            R.drawable.img,
-            R.drawable.img,
-            R.drawable.img,
-            R.drawable.img,
-            R.drawable.img,
-            R.drawable.img,
-            R.drawable.img,
-            R.drawable.img,
-            R.drawable.img
-        )
+        dbref.addValueEventListener(object : ValueEventListener {
 
-        title = arrayOf(
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
+            override fun onDataChange(snapshot: DataSnapshot) {
 
-            )
-        date = arrayOf(
-            "12/12/2022",
-            "12/12/2022",
-            "12/12/2022",
-            "12/12/2022",
-            "12/12/2022",
-            "12/12/2022",
-            "12/12/2022",
-            "12/12/2022",
-            "12/12/2022"
+                if (snapshot.exists()){
 
-        )
+                    for (eventSnapshot in snapshot.children){
 
-        for(i in imageId.indices){
-            val events = EventModel(imageId[i],date[i],title[i],"")
-            eventArrayList.add(events)
-        }
+                        val event = eventSnapshot.getValue(EventModel::class.java)
+                        eventArrayList.add(event!!)
+
+                    }
+
+                    recyclerView.adapter = EventAdapter(eventArrayList)
+
+
+                }
+
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+
+
+        })
     }
-
 
 
 }
