@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="firebase_database_url" translatable="false">https://assignment-ocean-app-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+    <string name="gcm_defaultSenderId" translatable="false">386350095742</string>
+    <string name="google_api_key" translatable="false">AIzaSyCCrDjTilVWSm2qPR0QNlmr8mm9jfgXxjY</string>
+    <string name="google_app_id" translatable="false">1:386350095742:android:c5c7628baa630719af272f</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCCrDjTilVWSm2qPR0QNlmr8mm9jfgXxjY</string>
+    <string name="google_storage_bucket" translatable="false">assignment-ocean-app.appspot.com</string>
+    <string name="project_id" translatable="false">assignment-ocean-app</string>
+</resources>
