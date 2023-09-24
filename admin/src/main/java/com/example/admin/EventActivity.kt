@@ -20,21 +20,47 @@ import com.example.admin.util.FirebaseUtil
 import java.util.Random
 import java.text.SimpleDateFormat
 import android.content.ComponentName
-
-
+import android.net.Uri
+import android.widget.ImageView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import com.google.firebase.storage.FirebaseStorage
 
 
 class EventActivity : AppCompatActivity() {
     private var selectedDate: Date? = null
     private var selectedHour: Int? = null
     private var selectedMinute: Int? = null
-
+    private var imageURL: String? = null
+    var url: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event)
         val saveBtn = findViewById<Button>(R.id.saveButton)
         val datePickerButton = findViewById<Button>(R.id.datePickerButton)
         val timePickerButton = findViewById<Button>(R.id.timePickerButton)
+        val uploadEventImage = findViewById<ImageView>(R.id.uploadEventImage)
+
+        val activityResultLauncher = registerForActivityResult<Intent, ActivityResult>(
+            ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val data = result.data
+                url = data!!.data
+                uploadEventImage.setImageURI(url)
+            } else {
+                Toast.makeText(this, "No Image Selected", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
+        uploadEventImage.setOnClickListener {
+            val photoPicker = Intent(Intent.ACTION_PICK)
+            photoPicker.type = "image/*"
+            activityResultLauncher.launch(photoPicker)
+        }
+
+
         datePickerButton.setOnClickListener{
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kuala_Lumpur"))
             val year = calendar.get(Calendar.YEAR)
@@ -86,7 +112,7 @@ class EventActivity : AppCompatActivity() {
 
 
         saveBtn.setOnClickListener{
-            saveReportData()
+            saveEventDataAndImage()
         }
 
         datePickerButton.text = "-"
@@ -98,7 +124,32 @@ class EventActivity : AppCompatActivity() {
         return "E${String.format("%3d", randomNumber)}"
     }
 
-    private fun saveReportData(){
+    private fun saveEventDataAndImage(){
+        val storageReference = FirebaseStorage.getInstance().reference.child("Task Images")
+            .child(url!!.lastPathSegment!!)
+        val builder = AlertDialog.Builder(this)
+        builder.setCancelable(false)
+        builder.setView(R.layout.progress_layout)
+        val dialog = builder.create()
+        dialog.show()
+        storageReference.putFile(url!!).addOnSuccessListener { taskSnapshot ->
+            val uriTask = taskSnapshot.storage.downloadUrl
+            while (!uriTask.isComplete);
+            val urlImage = uriTask.result
+            imageURL = urlImage.toString()
+            saveEventData()
+            dialog.dismiss()
+
+        }.addOnFailureListener {
+            dialog.dismiss()
+        }
+
+
+    }
+    private fun saveEventData(){
+
+
+
         val eventTitle = findViewById<TextView>(R.id.uploadEventTitle).text.toString()
         val eventDecs = findViewById<TextView>(R.id.uploadEventDesc).text.toString()
 
@@ -135,6 +186,7 @@ class EventActivity : AppCompatActivity() {
             eventDecs = eventDecs,
             eventDate = formattedDate,
             eventTime = formattedTime,
+            eventImage = imageURL.toString(),
         )
 
         val eventMap = HashMap<String, Any>()
@@ -143,6 +195,7 @@ class EventActivity : AppCompatActivity() {
         eventMap["eventDate"] = formattedDate
         eventMap["eventDecs"] = eventDecs
         eventMap["eventTime"] = formattedTime
+        eventMap["eventImage"] = imageURL.toString()
 
         eventRef.child(eventKey!!).setValue(eventMap).addOnSuccessListener {
             // Data was successfully written to Firebase

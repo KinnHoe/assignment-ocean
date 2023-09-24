@@ -27,6 +27,9 @@ data class Event(
     @ColumnInfo(name = "eventTime")
     var eventTime: String = "",
 
+    @ColumnInfo(name = "eventImage")
+    var eventImage: String = "",
+
 
 
 
