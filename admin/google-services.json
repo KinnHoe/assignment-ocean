@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "386350095742",
+    "firebase_url": "https://assignment-ocean-app-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "assignment-ocean-app",
+    "storage_bucket": "assignment-ocean-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386350095742:android:c5c7628baa630719af272f",
+        "android_client_info": {
+          "package_name": "com.example.admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCrDjTilVWSm2qPR0QNlmr8mm9jfgXxjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386350095742:android:bf78dd928d024878af272f",
+        "android_client_info": {
+          "package_name": "com.example.assignment_ocean"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCrDjTilVWSm2qPR0QNlmr8mm9jfgXxjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
