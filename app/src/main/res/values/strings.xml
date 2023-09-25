@@ -2,4 +2,11 @@
     <string name="app_name">assignment-ocean</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="posts">posts</string>
+    <string name="share">Share</string>
+    <string name="enter_a_caption_here">Enter a caption here…</string>
+    <string name="next">Next</string>
+    <string name="search">Search</string>
+
 </resources>
