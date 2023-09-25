@@ -178,8 +178,8 @@ class UpdateEventActivity : AppCompatActivity() {
         }
 
         saveBtn.setOnClickListener{
-            Toast.makeText(this,"Successfully Updated",Toast.LENGTH_SHORT).show()
-            updateData(eventDateModified.toString(),eventTimeModified.toString(),eventTitleModified.toString(),eventDecsModified.toString())
+            updateData(eventDateModified.toString(),eventTimeModified.toString(),eventTitleTextView.text.toString(),eventDescriptionTextView.text.toString())
+
         }
 
 
@@ -196,7 +196,6 @@ class UpdateEventActivity : AppCompatActivity() {
             "eventTitle" to eventTitle,
             "eventDecs" to eventDecs
         )
-        Toast.makeText(this,eventKey,Toast.LENGTH_SHORT).show()
         database.child(eventKey!!).updateChildren(user).addOnSuccessListener {
             Toast.makeText(this,"Successfully Updated",Toast.LENGTH_SHORT).show()
         }.addOnFailureListener{
