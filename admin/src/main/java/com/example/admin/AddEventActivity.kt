@@ -9,7 +9,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import com.example.admin.data.Event
+import com.example.admin.data.EventModel
 import java.text.DateFormatSymbols
 import java.util.Calendar
 import java.util.Date
@@ -175,7 +175,7 @@ class AddEventActivity : AppCompatActivity() {
 
 
 
-        val event = Event(
+        val event = EventModel(
             firebaseId = eventKey!!,
             referenceNo = referenceNo,
             eventTitle = eventTitle,

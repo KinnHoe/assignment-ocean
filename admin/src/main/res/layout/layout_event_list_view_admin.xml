@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="15dp"
+    android:padding="5dp"
+    android:layout_margin="5dp"
+    android:backgroundTint="@color/eventCardView"
+    android:id="@+id/eventCardView">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:src="@drawable/img"
+            android:scaleType="centerCrop"
+            android:id="@+id/EventImg"
+            android:layout_width="match_parent"
+            android:layout_height="125dp"/>
+
+        <TextView
+            android:id="@+id/EventDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="0dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="0dp"
+            android:text="Event Date"
+            android:textColor="@color/grey"
+            android:textSize="13dp" />
+
+
+        <TextView
+            android:id="@+id/EventTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="5dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="0dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="5dp"
+            android:text="Event Title"
+            android:textColor="@color/white"
+            android:textSize="25dp"
+            android:textStyle="bold" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/modifyEventBtn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="left"
+                android:src="@drawable/ic_edit_event"
+                app:tint="@android:color/darker_gray"
+                android:layout_margin="10dp"
+                android:padding="7dp"
+                android:textSize="13dp" />
+
+            <ImageView
+                android:id="@+id/deleteEventBtn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="left"
+                android:src="@drawable/ic_delete_event"
+                app:tint="@android:color/darker_gray"
+                android:layout_margin="10dp"
+                android:padding="7dp"
+                android:textSize="13dp" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -9,6 +9,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Assignmentocean">
         <activity
+            android:name=".UpdateEventActivity"
+            android:exported="false" />
+        <activity
             android:name=".RetrieveEventActivity"
             android:exported="false" />
         <activity

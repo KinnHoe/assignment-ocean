@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "Event")
-data class Event(
+data class EventModel(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
 

@@ -2,4 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="topnav">#D8CACA</color>
+    <color name="grey">#a6a6a6</color>
+    <color name="eventCardView">#009DC4</color>
+    <color name="lightgrey">#d8d8d8</color>
+    <color name="darkgrey">#595959</color>
 </resources>
