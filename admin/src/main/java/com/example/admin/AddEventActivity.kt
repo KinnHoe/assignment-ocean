@@ -9,7 +9,6 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.admin.data.Event
 import java.text.DateFormatSymbols
 import java.util.Calendar
@@ -19,7 +18,6 @@ import java.util.TimeZone
 import com.example.admin.util.FirebaseUtil
 import java.util.Random
 import java.text.SimpleDateFormat
-import android.content.ComponentName
 import android.net.Uri
 import android.widget.ImageView
 import androidx.activity.result.ActivityResult
@@ -28,7 +26,7 @@ import androidx.appcompat.app.AlertDialog
 import com.google.firebase.storage.FirebaseStorage
 
 
-class EventActivity : AppCompatActivity() {
+class AddEventActivity : AppCompatActivity() {
     private var selectedDate: Date? = null
     private var selectedHour: Int? = null
     private var selectedMinute: Int? = null

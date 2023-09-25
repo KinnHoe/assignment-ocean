@@ -56,75 +56,94 @@
         android:layout_below="@+id/topnavbar">
 
     <!-- Scrollable content -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/topnavbar">
-
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:layout_height="match_parent"
+            android:layout_below="@id/topnavbar">
 
-            <!-- Event Image -->
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/eventImage"
-                android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/img"
-                app:shapeAppearanceOverlay="@style/roundedeventimage"/>
-
-            <TextView
-                android:id="@+id/AbtTheEvent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="About The Event"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="16dp"/>
-
-            <!-- Event Title -->
-            <TextView
-                android:id="@+id/eventTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Event Title"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="16dp" />
-
-            <!-- Event Date -->
-            <TextView
-                android:id="@+id/eventDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Event Date"
-                android:textSize="18sp"
-                android:layout_marginTop="8dp" />
-
-            <!-- Event Description -->
-            <TextView
-                android:id="@+id/eventDescription"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Event Description"
-                android:textSize="16sp"
-                android:layout_marginTop="16dp" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/eventTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Event Time"
-                android:textSize="16sp"
-                android:layout_marginTop="16dp" />
+                <!-- Event Image -->
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/eventImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img"
+                    app:shapeAppearanceOverlay="@style/roundedeventimage" />
 
-        </LinearLayout>
-    </ScrollView>
+                <TextView
+                    android:id="@+id/AbtTheEvent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/baloo_paaji_2_bold"
+                    android:text="About The Event"
+                    android:textSize="35sp" />
+
+                <!-- Event Title -->
+                <TextView
+                    android:id="@+id/eventTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/baloo_paaji_2_semibold"
+                    android:text="Event Title"
+                    android:textSize="27sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    >
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_marginRight="5dp"
+                        android:src="@drawable/ic_time_event"
+                        app:tint="@color/grey" />
+                    <!-- Event Date -->
+                    <TextView
+                        android:id="@+id/eventDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/baloo_paaji_2_semibold"
+                        android:text="Event Date"
+                        android:textColor="@color/grey"
+                        android:layout_marginRight="5dp"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/eventTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/baloo_paaji_2_semibold"
+                        android:text="Event Date"
+                        android:textColor="@color/grey"
+                        android:textSize="15sp" />
+
+
+                </LinearLayout>
+
+                <!-- Event Description -->
+                <TextView
+                    android:id="@+id/eventDescription"
+                    android:layout_width="370dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="15dp"
+                    android:fontFamily="@font/baloo_paaji_2_semibold"
+                    android:text="Event Description"
+                    android:textSize="27sp" />
+
+
+            </LinearLayout>
+        </ScrollView>
     </FrameLayout>
 
 

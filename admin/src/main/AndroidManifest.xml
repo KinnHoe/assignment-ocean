@@ -9,7 +9,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Assignmentocean">
         <activity
-            android:name=".EventActivity"
+            android:name=".RetrieveEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ModifyEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddEventActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
