@@ -124,7 +124,7 @@
             android:padding="16dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:hint="Enter operator"
+            android:hint="Enter Event Description"
             android:gravity="start|center_vertical"
             android:textColor="@color/black"/>
 

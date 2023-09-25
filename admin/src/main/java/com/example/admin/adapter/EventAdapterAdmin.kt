@@ -1,5 +1,6 @@
 package com.example.admin.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import com.example.admin.R
 import com.google.android.material.imageview.ShapeableImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.example.admin.UpdateEventActivity
 import com.example.admin.data.EventModel
 
 
@@ -42,12 +44,10 @@ class EventAdapterAdmin(private val eventList: ArrayList<EventModel>) : Recycler
         holder.eventDate.text = currentEvent.eventDate
 
         holder.modifyEventBtn.setOnClickListener {
-//            val context = holder.itemView.context
-//            val intent = Intent(context, EventDetail::class.java)
-//            intent.putExtra("eventTitle", currentEvent.eventTitle)
-//            context.startActivity(intent)
-
-            Toast.makeText(holder.itemView.context,"link to setting file using intent in adminAdapter modify",Toast.LENGTH_SHORT).show()
+            val context = holder.itemView.context
+            val intent = Intent(context, UpdateEventActivity::class.java)
+            intent.putExtra("eventTitle", currentEvent.eventTitle)
+            context.startActivity(intent)
         }
         holder.deleteEventBtn.setOnClickListener {
             Toast.makeText(holder.itemView.context,"link to setting file using intent in adminAdapter delete",Toast.LENGTH_SHORT).show()
