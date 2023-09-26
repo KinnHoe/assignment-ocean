@@ -19,8 +19,9 @@ import com.example.assignment_ocean.databinding.FragmentAddPostBinding
 import com.example.assignment_ocean.models.Post
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
-import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.TimeZone
 
 class AddPost : Fragment() {
 
@@ -100,14 +101,13 @@ class AddPost : Fragment() {
         val post: Post
 
         if (imageURL != null) {
-            post = Post(caption, imageURL!!)
+            post = Post(caption, imageURL!!, getMalaysiaTimestamp()) // Add Malaysia timestamp here
         } else {
             // Handle the case when imageURL is null, e.g., provide a default image URL.
-            post = Post(caption, "")
+            post = Post(caption, "", getMalaysiaTimestamp()) // Add Malaysia timestamp here
         }
 
-        val currentDate = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
-        FirebaseDatabase.getInstance().getReference("Posts").child(currentDate)
+        FirebaseDatabase.getInstance().getReference("Posts").push()
             .setValue(post).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(requireContext(), "Post Saved", Toast.LENGTH_SHORT).show()
@@ -120,6 +120,14 @@ class AddPost : Fragment() {
                     ).show()
                 }
             }
+    }
+
+    private fun getMalaysiaTimestamp(): String {
+        val malaysiaTimeZone = TimeZone.getTimeZone("Asia/Kuala_Lumpur")
+        val malaysiaCalendar = Calendar.getInstance(malaysiaTimeZone)
+        val malaysiaDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        malaysiaDateFormat.timeZone = malaysiaTimeZone
+        return malaysiaDateFormat.format(malaysiaCalendar.time)
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

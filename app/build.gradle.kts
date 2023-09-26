@@ -40,7 +40,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
-        dataBinding = true
+
     }
 
 }
@@ -81,6 +81,8 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-runtime:2.3.1")
     implementation ("androidx.navigation:navigation-fragment-ktx:2.3.5")
     implementation ("androidx.navigation:navigation-ui-ktx:2.3.5")
+
+    implementation ("com.squareup.picasso:picasso:2.8")
 
 
 }
