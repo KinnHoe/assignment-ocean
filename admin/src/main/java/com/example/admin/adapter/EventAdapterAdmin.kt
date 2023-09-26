@@ -15,10 +15,16 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.admin.UpdateEventActivity
 import com.example.admin.data.EventModel
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 class EventAdapterAdmin(private val eventList: ArrayList<EventModel>) : RecyclerView.Adapter<EventAdapterAdmin.MyViewHolder>(){
-
+    private lateinit var database: DatabaseReference
+    var eventKey: String? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.layout_event_list_view_admin,parent,false)
@@ -42,6 +48,7 @@ class EventAdapterAdmin(private val eventList: ArrayList<EventModel>) : Recycler
         //holder.eventImage.setImageResource(currentEvent.eventImage)
         holder.eventTitle.text = currentEvent.eventTitle
         holder.eventDate.text = currentEvent.eventDate
+        var eventTitle = currentEvent.eventTitle
 
         holder.modifyEventBtn.setOnClickListener {
             val context = holder.itemView.context
@@ -50,7 +57,35 @@ class EventAdapterAdmin(private val eventList: ArrayList<EventModel>) : Recycler
             context.startActivity(intent)
         }
         holder.deleteEventBtn.setOnClickListener {
-            Toast.makeText(holder.itemView.context,"link to setting file using intent in adminAdapter delete",Toast.LENGTH_SHORT).show()
+            val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+            val eventsRef: DatabaseReference = database.getReference("events")
+
+            if (eventTitle != null) {
+                eventsRef.orderByChild("eventTitle").equalTo(eventTitle)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (snapshot.exists()) {
+                                for (eventSnapshot in snapshot.children) {
+                                    eventKey = eventSnapshot.key
+                                    eventsRef.child(eventKey.toString()).removeValue().addOnSuccessListener {
+                                        Toast.makeText(holder.itemView.context, "Deleted", Toast.LENGTH_SHORT).show()
+                                    }.addOnFailureListener {
+                                        Toast.makeText(holder.itemView.context, "Unable to delete", Toast.LENGTH_SHORT).show()
+                                    }
+
+                                }
+                            }else {
+                                // Handle the case where no event with the given title was found
+
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                            // Handle any database errors here
+                        }
+                    })
+
+
+            }
 
         }
 
@@ -72,6 +107,7 @@ class EventAdapterAdmin(private val eventList: ArrayList<EventModel>) : Recycler
         val modifyEventBtn : ImageView = itemView.findViewById(R.id.modifyEventBtn)
         val deleteEventBtn : ImageView = itemView.findViewById(R.id.deleteEventBtn)
     }
+
 
 }
 
