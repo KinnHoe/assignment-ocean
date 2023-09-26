@@ -76,9 +76,11 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.11.0")
     implementation ("com.google.android.material:material:1.1.0")
 
-    implementation ("androidx.lifecycle:lifecycle-viewmodel:2.4.0") // Ensure this version matches your project's configuration
-    implementation ("androidx.lifecycle:lifecycle-livedata:2.4.0") // Ensure this version matches your project's configuration
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0") // Ensure this version matches your project's configuration
-    implementation ("androidx.databinding:databinding-runtime:7.1.0") // Ensure this version matches your project's configuration
+    implementation ("androidx.lifecycle:lifecycle-viewmodel:2.3.1")
+    implementation ("androidx.lifecycle:lifecycle-livedata:2.3.1")
+    implementation ("androidx.lifecycle:lifecycle-runtime:2.3.1")
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.3.5")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.3.5")
+
 
 }
