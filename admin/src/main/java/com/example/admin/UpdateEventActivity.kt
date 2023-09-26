@@ -21,6 +21,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import java.text.DateFormatSymbols
 import java.util.Calendar
 import java.util.Date
@@ -32,6 +34,7 @@ class UpdateEventActivity : AppCompatActivity() {
     private var selectedHour: Int? = null
     private var selectedMinute: Int? = null
     private lateinit var database: DatabaseReference
+    private lateinit var storageRef: StorageReference
     private var eventImageModified: String? = null
     private var eventDateModified: String? = null
     private var eventTimeModified: String? = null
@@ -75,11 +78,9 @@ class UpdateEventActivity : AppCompatActivity() {
                                             .into(eventImage)
                                     }
 
-                                    eventTitleTextView.text = Editable.Factory.getInstance()
-                                        .newEditable(eventModel.eventTitle)
+                                    eventTitleTextView.text = Editable.Factory.getInstance().newEditable(eventModel.eventTitle)
                                     eventDateTextView.text = eventModel.eventDate
-                                    eventDescriptionTextView.text = Editable.Factory.getInstance()
-                                        .newEditable(eventModel.eventDecs)
+                                    eventDescriptionTextView.text = Editable.Factory.getInstance().newEditable(eventModel.eventDecs)
                                     eventTime.text = eventModel.eventTime
 
                                     // Load and display the event image using Glide
@@ -88,7 +89,6 @@ class UpdateEventActivity : AppCompatActivity() {
                                             .load(eventModel.eventImage)
                                             .into(eventImage)
                                     }
-
                                     eventImageModified = eventModel.eventImage
                                     eventDateModified = eventModel.eventDate
                                     eventTimeModified = eventModel.eventTime
@@ -178,6 +178,7 @@ class UpdateEventActivity : AppCompatActivity() {
         }
 
         saveBtn.setOnClickListener{
+            Toast.makeText(this, eventImageModified.toString(),Toast.LENGTH_SHORT).show()
             updateData(eventDateModified.toString(),eventTimeModified.toString(),eventTitleTextView.text.toString(),eventDescriptionTextView.text.toString())
 
         }
@@ -189,16 +190,64 @@ class UpdateEventActivity : AppCompatActivity() {
     }
 
     private fun updateData(eventDate: String, eventTime: String, eventTitle: String, eventDecs: String) {
-        database = FirebaseDatabase.getInstance().getReference("events")
-        val user = mapOf<String,String>(
-            "eventDate" to eventDate,
-            "eventTime" to eventTime,
-            "eventTitle" to eventTitle,
-            "eventDecs" to eventDecs
-        )
-        database.child(eventKey!!).updateChildren(user).addOnSuccessListener {
-            Toast.makeText(this,"Successfully Updated",Toast.LENGTH_SHORT).show()
-        }.addOnFailureListener{
-            Toast.makeText(this,"Failed to Update",Toast.LENGTH_SHORT).show()
-        }}
+        if (url != null) {
+            storageRef = FirebaseStorage.getInstance().reference.child("Task Images")
+                .child(url!!.lastPathSegment!!)
+
+            storageRef.putFile(url!!)
+                .addOnSuccessListener { taskSnapshot ->
+                    // Image uploaded successfully, now retrieve the download URL
+                    storageRef.downloadUrl.addOnSuccessListener { uRL ->
+                        eventImageModified = uRL.toString()
+
+                        // Update the Firebase Realtime Database with the image URL
+                        database = FirebaseDatabase.getInstance().getReference("events")
+                        val user = mapOf(
+                            "eventImage" to eventImageModified.toString(),
+                            "eventDate" to eventDate,
+                            "eventTime" to eventTime,
+                            "eventTitle" to eventTitle,
+                            "eventDecs" to eventDecs
+                        )
+                        database.child(eventKey!!).updateChildren(user)
+                            .addOnSuccessListener {
+                                Toast.makeText(this, "Successfully Updated", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(this, "Failed to Update", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    // Handle the error if image upload fails
+                    Toast.makeText(this, "Image Upload Failed: ${exception.message}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+        } else {
+
+            // Update the Firebase Realtime Database with the image URL
+            database = FirebaseDatabase.getInstance().getReference("events")
+            val user = mapOf(
+                "eventImage" to eventImageModified.toString(),
+                "eventDate" to eventDate,
+                "eventTime" to eventTime,
+                "eventTitle" to eventTitle,
+                "eventDecs" to eventDecs
+            )
+            database.child(eventKey!!).updateChildren(user)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Successfully Updated", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Failed to Update", Toast.LENGTH_SHORT)
+                        .show()
+                }
+        }
+    }
+
+
 }
