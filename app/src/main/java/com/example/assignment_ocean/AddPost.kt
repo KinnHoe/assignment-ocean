@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.TimeZone
 
+
 class AddPost : Fragment() {
 
     private lateinit var binding: FragmentAddPostBinding
@@ -108,10 +109,15 @@ class AddPost : Fragment() {
         }
 
         FirebaseDatabase.getInstance().getReference("Posts").push()
-            .setValue(post).addOnCompleteListener { task ->
+            .setValue(post)
+            .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(requireContext(), "Post Saved", Toast.LENGTH_SHORT).show()
-                    // Clear UI components or navigate to a different screen as needed.
+                    Toast.makeText(requireContext(), "Post shared", Toast.LENGTH_SHORT).show()
+
+                    // Clear the image and caption fields
+                    binding.uploadCaption.text.clear()
+                    // Set the default image in the ImageView
+                    binding.uploadImage.setImageResource(R.drawable.uploadimg)
                 } else {
                     Toast.makeText(
                         requireContext(),
@@ -121,6 +127,7 @@ class AddPost : Fragment() {
                 }
             }
     }
+
 
     private fun getMalaysiaTimestamp(): String {
         val malaysiaTimeZone = TimeZone.getTimeZone("Asia/Kuala_Lumpur")
@@ -137,4 +144,5 @@ class AddPost : Fragment() {
         binding = FragmentAddPostBinding.inflate(inflater, container, false)
         return binding.root
     }
+
 }

@@ -1,12 +1,8 @@
 package com.example.assignment_ocean.models
 
-import com.google.firebase.database.ServerValue
-
-class Post(
-    var caption: String,
-    var photo: String?,
-    val timestamp: Any = ServerValue.TIMESTAMP
-) {
-    constructor() : this("", null)
-}
-
+data class Post(
+    var id: String? = null,
+    var caption: String = "",
+    var photo: String? = null,
+    val timestamp: Map<String, String> = mapOf("timestamp" to "true")
+)

@@ -7,7 +7,7 @@
     android:background="@color/white">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/feed_recycler"
+        android:id="@+id/momentRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

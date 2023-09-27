@@ -30,6 +30,7 @@ android {
 
     buildFeatures{
         viewBinding = true
+        dataBinding = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -37,10 +38,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
-    }
-    buildFeatures {
-        viewBinding = true
-
     }
 
 }
@@ -83,6 +80,9 @@ dependencies {
     implementation ("androidx.navigation:navigation-ui-ktx:2.3.5")
 
     implementation ("com.squareup.picasso:picasso:2.8")
+
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
 
 
 }
