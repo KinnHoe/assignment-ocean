@@ -1,26 +1,29 @@
 package com.example.assignment_ocean
 
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.assignment_ocean.databinding.FragmentAddPostBinding
 import com.example.assignment_ocean.models.Post
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import java.util.TimeZone
 
 
@@ -30,14 +33,25 @@ class AddPost : Fragment() {
     private var imageURL: String? = null
     private var uri: Uri? = null
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentAddPostBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupViews()
+    }
 
-        val addPost = view.findViewById<ImageView>(R.id.uploadImage)
-        val captionEditText = view.findViewById<EditText>(R.id.uploadCaption)
-        val shareButton = view.findViewById<Button>(R.id.shareButton)
+    private fun setupViews() {
+        val addPost = binding.uploadImage
+        val captionEditText = binding.uploadCaption
+        val shareButton = binding.shareButton
 
-        val activityResultLauncher = registerForActivityResult<Intent, ActivityResult>(
+        val activityResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == AppCompatActivity.RESULT_OK) {
@@ -66,29 +80,53 @@ class AddPost : Fragment() {
             return
         }
 
+        if (!isNetworkConnected()) {
+            Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val dialog = createProgressDialog()
+        dialog.show()
+
         val storageReference = FirebaseStorage.getInstance().reference.child("Task Images")
-            .child(uri!!.lastPathSegment!!)
+            .child(uri!!.lastPathSegment ?: "")
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val taskSnapshot = storageReference.putFile(uri!!).await()
+                val urlImage = taskSnapshot.storage.downloadUrl.await()
+                imageURL = urlImage.toString()
+
+                // Upload data only after the image upload is complete
+                uploadData()
+
+                dialog.dismiss()
+            } catch (e: Exception) {
+                dialog.dismiss()
+                showError("Failed to upload image: ${e.message}")
+            }
+        }
+    }
+
+    private fun isNetworkConnected(): Boolean {
+        val connectivityManager =
+            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
+    }
+
+    private fun createProgressDialog(): AlertDialog {
         val builder = AlertDialog.Builder(requireContext())
         builder.setCancelable(false)
         builder.setView(R.layout.progress_layout)
-        val dialog = builder.create()
-        dialog.show()
-
-        storageReference.putFile(uri!!).addOnSuccessListener { taskSnapshot ->
-            val uriTask = taskSnapshot.storage.downloadUrl
-            while (!uriTask.isComplete);
-            val urlImage = uriTask.result
-            imageURL = urlImage.toString()
-            uploadData()
-            dialog.dismiss()
-        }.addOnFailureListener {
-            dialog.dismiss()
-            Toast.makeText(
-                requireContext(),
-                "Failed to upload image: ${it.message}",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+        return builder.create()
+    }
+    private fun getMalaysiaTimestamp(): String {
+        val malaysiaTimeZone = TimeZone.getTimeZone("Asia/Kuala_Lumpur")
+        val malaysiaCalendar = Calendar.getInstance(malaysiaTimeZone)
+        val malaysiaDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        malaysiaDateFormat.timeZone = malaysiaTimeZone
+        return malaysiaDateFormat.format(malaysiaCalendar.time)
     }
 
     private fun uploadData() {
@@ -99,50 +137,40 @@ class AddPost : Fragment() {
             return
         }
 
-        val post: Post
+        // Generate a unique key for the post
+        val id = FirebaseDatabase.getInstance().getReference("Posts").push().key
 
-        if (imageURL != null) {
-            post = Post(caption, imageURL!!, getMalaysiaTimestamp()) // Add Malaysia timestamp here
-        } else {
-            // Handle the case when imageURL is null, e.g., provide a default image URL.
-            post = Post(caption, "", getMalaysiaTimestamp()) // Add Malaysia timestamp here
-        }
+        // Create a Post object with the generated ID and server timestamp
+        val post = Post(id, caption, imageURL ?: "")
 
-        FirebaseDatabase.getInstance().getReference("Posts").push()
-            .setValue(post)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(requireContext(), "Post shared", Toast.LENGTH_SHORT).show()
-
-                    // Clear the image and caption fields
-                    binding.uploadCaption.text.clear()
-                    // Set the default image in the ImageView
-                    binding.uploadImage.setImageResource(R.drawable.uploadimg)
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Failed to save post: ${task.exception?.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+        if (id != null) {
+            FirebaseDatabase.getInstance().getReference("Posts").child(id)
+                .setValue(post)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(requireContext(), "Post shared", Toast.LENGTH_SHORT).show()
+                        clearFields()
+                    } else {
+                        showError("Failed to save post: ${task.exception?.message}")
+                    }
                 }
-            }
+        } else {
+            showError("Failed to generate a unique ID for the post")
+        }
     }
 
 
-    private fun getMalaysiaTimestamp(): String {
-        val malaysiaTimeZone = TimeZone.getTimeZone("Asia/Kuala_Lumpur")
-        val malaysiaCalendar = Calendar.getInstance(malaysiaTimeZone)
-        val malaysiaDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        malaysiaDateFormat.timeZone = malaysiaTimeZone
-        return malaysiaDateFormat.format(malaysiaCalendar.time)
+
+    private fun clearFields() {
+        binding.uploadCaption.text.clear()
+        binding.uploadImage.setImageResource(R.drawable.uploadimg)
     }
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        binding = FragmentAddPostBinding.inflate(inflater, container, false)
-        return binding.root
+
+    private fun showError(message: String) {
+        activity?.runOnUiThread {
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
     }
+
 
 }
