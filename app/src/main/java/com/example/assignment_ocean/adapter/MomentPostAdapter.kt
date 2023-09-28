@@ -54,7 +54,7 @@ class MomentPostAdapter(private val listener: MomentPostAdapterListener) : ListA
                 when (item.itemId) {
                     R.id.menu_update_post -> {
                         val post = getItem(adapterPosition)
-                        listener.onUpdatePostClicked(post)
+                        listener.onUpdatePostClicked(post) // Pass the selected post to the listener
                         true
                     }
                     R.id.menu_delete_post -> {

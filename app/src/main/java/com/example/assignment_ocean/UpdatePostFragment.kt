@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.assignment_ocean.databinding.FragmentUpdatePostBinding
 import com.example.assignment_ocean.models.Post
 import com.google.firebase.database.FirebaseDatabase
@@ -31,6 +32,8 @@ class UpdatePostFragment : Fragment() {
     private lateinit var binding: FragmentUpdatePostBinding
     private var updatedImageUri: Uri? = null
     private var postId: String? = null
+    private var caption: String? = null
+    private var imageURL: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,12 +43,25 @@ class UpdatePostFragment : Fragment() {
         return binding.root
     }
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         postId = arguments?.getString("postId")
+        caption = arguments?.getString("caption")
+        imageURL = arguments?.getString("imageURL")
 
         setupViews()
+
+        // Populate the reuploadCaption field with the selected post's caption
+        binding.reuploadCaption.setText(caption)
+
+        // Load the image from the imageURL and set it in reuploadImage ImageView
+        Glide.with(requireContext())
+            .load(imageURL)
+            .placeholder(R.drawable.uploadimg) // Replace with your placeholder image
+            .into(binding.reuploadImage)
     }
 
     private fun setupViews() {

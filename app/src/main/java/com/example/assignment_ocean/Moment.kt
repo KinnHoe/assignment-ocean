@@ -104,9 +104,11 @@ class Moment : Fragment(), MomentPostAdapterListener {
     override fun onUpdatePostClicked(post: Post) {
         val updateFragment = UpdatePostFragment()
 
-        // Pass the postId to the UpdatePostFragment using arguments
+        // Pass the postId, caption, and image URL to the UpdatePostFragment using arguments
         val bundle = Bundle()
         bundle.putString("postId", post.id) // Assuming post.id contains the postId
+        bundle.putString("caption", post.caption) // Assuming post.caption contains the caption
+        bundle.putString("imageURL", post.photo) // Assuming post.photo contains the image URL
         updateFragment.arguments = bundle
 
         val transaction = requireActivity().supportFragmentManager.beginTransaction()
