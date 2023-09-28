@@ -19,7 +19,6 @@
         android:id="@+id/updatePostFragment"
         android:name="com.example.assignment_ocean.UpdatePostFragment"
         android:label="Update Post Fragment"
-        tools:layout="@layout/fragment_update_post">
-    </fragment>
+        tools:layout="@layout/fragment_update_post"/>
 
 </navigation>
