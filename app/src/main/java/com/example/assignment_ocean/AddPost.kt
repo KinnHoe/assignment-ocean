@@ -14,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.example.assignment_ocean.databinding.FragmentAddPostBinding
 import com.example.assignment_ocean.models.Post
 import com.google.firebase.database.FirebaseDatabase
@@ -152,9 +151,6 @@ class AddPost : Fragment() {
                         Toast.makeText(requireContext(), "Post shared", Toast.LENGTH_SHORT).show()
                         clearFields()
 
-                        // Navigate to the Moment fragment
-                        val navController = findNavController()
-                        navController.navigate(R.id.moment)
                     } else {
                         showError("Failed to save post: ${task.exception?.message}")
                     }

@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -119,16 +120,33 @@ class Moment : Fragment(), MomentPostAdapterListener {
 
 
     override fun onDeletePostClicked(post: Post) {
-        viewModel.deletePost(
-            post,
-            onSuccess = {
-                // Show a Toast message for successful deletion
-                Toast.makeText(requireContext(), "Post deleted", Toast.LENGTH_SHORT).show()
-            },
-            onError = { errorMessage ->
-                // Show a Toast message for deletion error
-                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.apply {
+            setTitle("Confirm Deletion")
+            setMessage("Are you sure you want to delete this post?")
+            setPositiveButton("Delete") { _, _ ->
+                // User confirmed deletion, perform the delete operation here
+                viewModel.deletePost(
+                    post,
+                    onSuccess = {
+                        // Show a Toast message for successful deletion
+                        Toast.makeText(requireContext(), "Post deleted", Toast.LENGTH_SHORT).show()
+                    },
+                    onError = { errorMessage ->
+                        // Show a Toast message for deletion error
+                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                    }
+                )
             }
-        )
+            setNegativeButton("Cancel") { dialog, _ ->
+                // User canceled the deletion, dismiss the dialog
+                dialog.dismiss()
+            }
+            setCancelable(false) // Prevent dismissing the dialog by clicking outside or pressing back button
+        }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
+
 }
