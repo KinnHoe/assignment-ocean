@@ -8,5 +8,8 @@
     <string name="enter_a_caption_here">Enter a caption here…</string>
     <string name="next">Next</string>
     <string name="search">Search</string>
+    <string name="update_button_text">Update</string>
+    <string name="update_caption_hint">Update a caption here…</string>
+    <string name="update_post_text">Update Post</string>
 
 </resources>

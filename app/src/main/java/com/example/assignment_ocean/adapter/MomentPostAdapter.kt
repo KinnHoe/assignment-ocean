@@ -30,6 +30,7 @@ class MomentPostAdapter(private val listener: MomentPostAdapterListener) : ListA
         init {
             binding.moreImage.setOnClickListener { showPopupMenu() }
         }
+
         fun bind(momentData: Post) {
             binding.captionText.text = momentData.caption
             // Load the image using Glide
@@ -44,6 +45,7 @@ class MomentPostAdapter(private val listener: MomentPostAdapterListener) : ListA
             // Pass the converted timestamp to formatTimestamp
             binding.timestampText.text = formatTimestamp(timestamp)
         }
+
         private fun showPopupMenu() {
             val popupMenu = PopupMenu(itemView.context, binding.moreImage)
             popupMenu.inflate(R.menu.moment_item_menu) // Create a menu resource file

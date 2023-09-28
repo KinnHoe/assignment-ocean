@@ -30,7 +30,7 @@
             <TextView
                 android:id="@+id/update_text"
                 style="@style/toolbar_title"
-                android:text="Update Post"
+                android:text="@string/update_post_text"
                 app:layout_constraintStart_toEndOf="@+id/close_image"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -73,7 +73,7 @@
                 android:layout_marginTop="20dp"
                 android:padding="16dp"
                 android:maxLines="1"
-                android:hint="Update a caption here…"
+                android:hint="@string/update_caption_hint"
                 android:gravity="start|center_vertical"
                 android:textColor="@color/lavender"
                 app:layout_constraintTop_toBottomOf="@+id/uploadImage" />
@@ -82,7 +82,7 @@
                 android:id="@+id/updateButton"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="Update"
+                android:text="@string/update_button_text"
                 android:textSize="18sp"
                 android:layout_marginTop="20dp"
                 app:cornerRadius="20dp"

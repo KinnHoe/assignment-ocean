@@ -8,16 +8,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation.findNavController
+import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assignment_ocean.databinding.FragmentMomentBinding
 import com.example.assignment_ocean.models.Post
 
-class Moment : Fragment() {
+class Moment : Fragment(), MomentPostAdapterListener {
 
     private lateinit var binding: FragmentMomentBinding
     private lateinit var momentAdapter: MomentPostAdapter
     private lateinit var viewModel: MomentViewModel
+    private lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,7 +33,7 @@ class Moment : Fragment() {
 
         // Initialize ViewModel and RecyclerView Adapter
         viewModel = ViewModelProvider(this).get(MomentViewModel::class.java)
-        momentAdapter = MomentPostAdapter()
+        momentAdapter = MomentPostAdapter(this)
 
         // Set up RecyclerView
         binding.momentRecyclerView.apply {
@@ -40,36 +41,58 @@ class Moment : Fragment() {
             adapter = momentAdapter
         }
 
+        // Obtain the NavController
+    /*    navController = Navigation.findNavController(view)*/
+
         // Observe LiveData from ViewModel
         viewModel.getMomentData().observe(viewLifecycleOwner, { momentDataList ->
             // Update the adapter with the new data
             momentAdapter.submitList(momentDataList)
         })
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_update_post -> {
-                val post = // Get the selected post here
-                    viewModel.updatePost(post,
+                val postIdString = momentAdapter.getItemId(0)?.toString()
+                val post = momentAdapter.currentList.find {
+                    val postIdLong = it.id?.toLongOrNull()
+                    postIdLong != null && postIdString != null && postIdLong == postIdString.toLongOrNull()
+                }
+                post?.let {
+                    viewModel.updatePost(
+                        it,
                         onSuccess = {
                             // Handle successful update
+                            Toast.makeText(requireContext(), "Post updated", Toast.LENGTH_SHORT).show()
                         },
                         onError = { errorMessage ->
                             // Handle update error, show error message
+                            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
                         }
                     )
+                }
                 return true
             }
             R.id.menu_delete_post -> {
-                val post = // Get the selected post here
-                    viewModel.deletePost(post,
+                val postIdString = momentAdapter.getItemId(0)?.toString()
+                val post = momentAdapter.currentList.find {
+                    val postIdLong = it.id?.toLongOrNull()
+                    postIdLong != null && postIdString != null && postIdLong == postIdString.toLongOrNull()
+                }
+                post?.let {
+                    viewModel.deletePost(
+                        it,
                         onSuccess = {
                             // Handle successful deletion
+                            Toast.makeText(requireContext(), "Post deleted", Toast.LENGTH_SHORT).show()
                         },
                         onError = { errorMessage ->
                             // Handle deletion error, show error message
+                            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
                         }
                     )
+                }
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -78,9 +101,21 @@ class Moment : Fragment() {
 
 
     override fun onUpdatePostClicked(post: Post) {
-        // Use Navigation Component to navigate to fragment_update_post.xml
-        findNavController().navigate(R.id.action_moment_to_updatePost)
+        val updateFragment = UpdatePostFragment()
+
+        // Pass the postId to the UpdatePostFragment using arguments
+        val bundle = Bundle()
+        bundle.putString("postId", post.id) // Assuming post.id contains the postId
+        updateFragment.arguments = bundle
+
+        val transaction = requireActivity().supportFragmentManager.beginTransaction()
+        // Replace R.id.fragment_container with the actual ID of the container where you want to replace the fragment
+        transaction.replace(R.id.frame_layout, updateFragment)
+        transaction.addToBackStack(null) // Optional: Add to back stack for back navigation
+        transaction.commit()
     }
+
+
 
 
     override fun onDeletePostClicked(post: Post) {
@@ -96,6 +131,4 @@ class Moment : Fragment() {
             }
         )
     }
-
-
 }

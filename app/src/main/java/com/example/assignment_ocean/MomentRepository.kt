@@ -34,30 +34,33 @@ class MomentRepository {
     }
 
     fun updatePost(post: Post, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        val postUpdateData = mapOf(
-            "caption" to post.caption,
-            "photo" to post.photo
-        )
+        val postId = post.id ?: return // Return early if postId is null
 
-        databaseReference.child(post.id).updateChildren(postUpdateData)
+        val postReference = databaseReference.child(postId)
+
+        postReference.child("caption").setValue(post.caption ?: "")
+        postReference.child("photo").setValue(post.photo ?: "")
             .addOnSuccessListener {
-                onSuccess.invoke() // Success callback
+                onSuccess.invoke()
             }
             .addOnFailureListener { e ->
                 val errorMessage = "Update failed: ${e.message ?: "Unknown error"}"
-                onError.invoke(errorMessage) // Error callback with message
+                onError.invoke(errorMessage)
             }
     }
 
     fun deletePost(post: Post, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        databaseReference.child(post.id).removeValue()
+        val postId = post.id!!
+
+        databaseReference.child(postId).removeValue()
             .addOnSuccessListener {
-                onSuccess.invoke() // Success callback
+                onSuccess.invoke()
             }
             .addOnFailureListener { e ->
                 val errorMessage = "Deletion failed: ${e.message ?: "Unknown error"}"
-                onError.invoke(errorMessage) // Error callback with message
+                onError.invoke(errorMessage)
             }
     }
+
 
 }
