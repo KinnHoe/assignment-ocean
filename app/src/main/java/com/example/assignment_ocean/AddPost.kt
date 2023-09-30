@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,11 +22,6 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.TimeZone
-
 
 class AddPost : Fragment() {
 
@@ -48,7 +44,6 @@ class AddPost : Fragment() {
 
     private fun setupViews() {
         val addPost = binding.uploadImage
-        val captionEditText = binding.uploadCaption
         val shareButton = binding.shareButton
 
         val activityResultLauncher = registerForActivityResult(
@@ -80,7 +75,7 @@ class AddPost : Fragment() {
             return
         }
 
-        if (!isNetworkConnected()) {
+        if (!isNetworkConnected(requireContext())) {
             Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_SHORT).show()
             return
         }
@@ -108,11 +103,16 @@ class AddPost : Fragment() {
         }
     }
 
-    private fun isNetworkConnected(): Boolean {
+    private fun isNetworkConnected(context: Context): Boolean {
         val connectivityManager =
-            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connectivityManager.activeNetworkInfo
-        return networkInfo != null && networkInfo.isConnected
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+
+        return capabilities != null &&
+                (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
     }
 
     private fun createProgressDialog(): AlertDialog {
@@ -120,13 +120,6 @@ class AddPost : Fragment() {
         builder.setCancelable(false)
         builder.setView(R.layout.progress_layout)
         return builder.create()
-    }
-    private fun getMalaysiaTimestamp(): String {
-        val malaysiaTimeZone = TimeZone.getTimeZone("Asia/Kuala_Lumpur")
-        val malaysiaCalendar = Calendar.getInstance(malaysiaTimeZone)
-        val malaysiaDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        malaysiaDateFormat.timeZone = malaysiaTimeZone
-        return malaysiaDateFormat.format(malaysiaCalendar.time)
     }
 
     private fun uploadData() {
@@ -140,7 +133,7 @@ class AddPost : Fragment() {
         // Generate a unique key for the post
         val id = FirebaseDatabase.getInstance().getReference("Posts").push().key
 
-        // Create a Post object with the generated ID and server timestamp
+        // Create a Post object with the generated ID, caption, imageURL, and Firebase timestamp
         val post = Post(id, caption, imageURL ?: "")
 
         if (id != null) {
@@ -150,7 +143,6 @@ class AddPost : Fragment() {
                     if (task.isSuccessful) {
                         Toast.makeText(requireContext(), "Post shared", Toast.LENGTH_SHORT).show()
                         clearFields()
-
                     } else {
                         showError("Failed to save post: ${task.exception?.message}")
                     }
@@ -159,8 +151,6 @@ class AddPost : Fragment() {
             showError("Failed to generate a unique ID for the post")
         }
     }
-
-
 
     private fun clearFields() {
         binding.uploadCaption.text.clear()
@@ -172,6 +162,4 @@ class AddPost : Fragment() {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
     }
-
-
 }

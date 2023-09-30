@@ -35,7 +35,7 @@
         android:id="@+id/post_image"
         android:layout_width="match_parent"
         android:layout_height="562dp"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
         android:src="@drawable/image_placeholder"
         app:layout_constraintTop_toBottomOf="@id/user_photo_image"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,9 +47,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:textColor="@color/black"
+        android:text="@{post.timestamp}"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/post_image"
-        tools:text="2023-09-26 13:56:26" />
+        tools:text="2023-09-26 13:56:26"/>
 
     <TextView
         android:id="@+id/caption_text"
@@ -64,5 +65,7 @@
         app:layout_constraintTop_toBottomOf="@+id/timestamp_text"
         app:layout_constraintVertical_bias="0.103"
         tools:text="Caption" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

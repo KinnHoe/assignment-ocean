@@ -11,5 +11,6 @@
     <string name="update_button_text">Update</string>
     <string name="update_caption_hint">Update a caption here…</string>
     <string name="update_post_text">Update Post</string>
+    <string name="close_button_description">Close</string>
 
 </resources>

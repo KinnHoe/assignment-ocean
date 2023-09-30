@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assignment_ocean.databinding.FragmentMomentBinding
 import com.example.assignment_ocean.models.Post
@@ -19,7 +18,6 @@ class Moment : Fragment(), MomentPostAdapterListener {
     private lateinit var binding: FragmentMomentBinding
     private lateinit var momentAdapter: MomentPostAdapter
     private lateinit var viewModel: MomentViewModel
-    private lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,9 +39,6 @@ class Moment : Fragment(), MomentPostAdapterListener {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = momentAdapter
         }
-
-        // Obtain the NavController
-    /*    navController = Navigation.findNavController(view)*/
 
         // Observe LiveData from ViewModel
         viewModel.getMomentData().observe(viewLifecycleOwner, { momentDataList ->

@@ -4,28 +4,37 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
-
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/toolbar"
-        style="@style/toolbar"
-        app:contentInsetStart="0dp">
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topnavbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#1C4574"
+            app:menu="@menu/top_nav"
+            app:subtitleTextColor="#D8CACA"
+            app:title="marine "
+            app:titleTextColor="#D8CACA" />
+
+        <!-- Add a ConstraintLayout inside the AppBarLayout -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom">
 
             <ImageView
                 android:id="@+id/close_image"
                 style="@style/icon"
                 android:src="@drawable/ic_close"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:contentDescription="@string/close_button_description"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <TextView
                 android:id="@+id/update_text"
@@ -33,12 +42,12 @@
                 android:text="@string/update_post_text"
                 app:layout_constraintStart_toEndOf="@+id/close_image"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/close_image"
+                app:layout_constraintBottom_toBottomOf="@+id/close_image" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
@@ -60,10 +69,10 @@
             <ImageView
                 android:id="@+id/reuploadImage"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:src="@drawable/uploadimg"
+                android:layout_height="200dp"
                 android:layout_marginTop="10dp"
-                android:scaleType="fitXY"/>
+                android:scaleType="fitCenter"
+                android:src="@drawable/uploadimg" />
 
             <EditText
                 android:id="@+id/reuploadCaption"
@@ -91,6 +100,17 @@
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#1C4574"
+        app:itemTextColor="#D8CACA"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:menu="@menu/bottom_nav" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

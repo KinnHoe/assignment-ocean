@@ -7,6 +7,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 
 class MomentRepository {
@@ -15,12 +16,22 @@ class MomentRepository {
     fun getMomentData(): LiveData<List<Post>> {
         val liveData = MutableLiveData<List<Post>>()
 
-        databaseReference.addValueEventListener(object : ValueEventListener {
+        databaseReference.orderByChild("timestamp").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val momentList = mutableListOf<Post>()
-                for (postSnapshot in snapshot.children) {
+                for (postSnapshot in snapshot.children.reversed()) { // Reverse the list to get the latest post at the top
                     val post = postSnapshot.getValue(Post::class.java)
-                    post?.let { momentList.add(it) }
+                    post?.let {
+                        // Create a new Post instance with the ServerValue.TIMESTAMP
+                        val timestamp = postSnapshot.child("timestamp").getValue(Long::class.java) ?: ServerValue.TIMESTAMP
+                        val newPost = Post(
+                            id = it.id,
+                            caption = it.caption,
+                            photo = it.photo,
+                            timestamp = timestamp
+                        )
+                        momentList.add(newPost)
+                    }
                 }
                 liveData.value = momentList
             }
