@@ -39,7 +39,7 @@ class RetrieveEventActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recycleView)
         recyclerView.layoutManager = layoutManager
         recyclerView.setHasFixedSize(true)
-        adapter = EventAdapterAdmin(eventArrayList)
+        adapter = EventAdapterAdmin(this, eventArrayList)
         recyclerView.adapter = adapter
 
         topNavPersonAdmin.setOnClickListener {

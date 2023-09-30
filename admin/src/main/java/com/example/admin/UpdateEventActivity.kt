@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -15,7 +16,9 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
+import com.example.admin.dao.EventDao
 import com.example.admin.data.EventModel
+import com.example.admin.database.EventAppDb
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -23,6 +26,9 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.text.DateFormatSymbols
 import java.util.Calendar
 import java.util.Date
@@ -42,6 +48,7 @@ class UpdateEventActivity : AppCompatActivity() {
     private var eventDecsModified: String? = null
     var url: Uri? = null
     var eventKey: String? = null
+    var imagePath : String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update_event)
@@ -94,8 +101,12 @@ class UpdateEventActivity : AppCompatActivity() {
                                     eventTimeModified = eventModel.eventTime
                                     eventTitleModified = eventTitleTextView.text.toString()
                                     eventDecsModified = eventDescriptionTextView.text.toString()
+
+
                                 }
                             }
+
+
                         } else {
                             // Handle the case where no event with the given title was found
                         }
@@ -189,10 +200,38 @@ class UpdateEventActivity : AppCompatActivity() {
 
     }
 
+
+    fun getImageFilePath(uri: Uri): String{
+        return saveImageToFile(uri)
+    }
+
+    private fun saveImageToFile(uri: Uri): String {
+        val inputStream: InputStream? = this.contentResolver.openInputStream(uri)
+        val file = File(this.cacheDir, "${System.currentTimeMillis()}.jpg")
+        val outputStream = FileOutputStream(file)
+        try {
+            inputStream?.use { input ->
+                outputStream.use { output ->
+                    val buffer = ByteArray(4 * 1024) // 4K buffer size
+                    while (true) {
+                        val bytesRead = input.read(buffer)
+                        if (bytesRead == -1) break
+                        output.write(buffer, 0, bytesRead)
+                    }
+                    output.flush()
+                }
+            }} catch (e: Exception) {
+            Log.e("Error", "Error message", e)
+        }
+        Log.i("Testing", "saveImageFile1")
+        return file.absolutePath
+    }
+
     private fun updateData(eventDate: String, eventTime: String, eventTitle: String, eventDecs: String) {
         if (url != null) {
             storageRef = FirebaseStorage.getInstance().reference.child("Task Images")
                 .child(url!!.lastPathSegment!!)
+            imagePath = getImageFilePath(url!!)
 
             storageRef.putFile(url!!)
                 .addOnSuccessListener { taskSnapshot ->
@@ -209,6 +248,18 @@ class UpdateEventActivity : AppCompatActivity() {
                             "eventTitle" to eventTitle,
                             "eventDecs" to eventDecs
                         )
+                        var eventDao = EventAppDb.getAppDatabase(applicationContext)?.eventDao()
+                        val existingEvent = eventDao?.getEventByTitle(eventTitle)
+                        eventDao = EventAppDb.getAppDatabase(application)?.eventDao()
+                        val updatedEvent = EventModel(
+                            id = existingEvent!!.id,
+                            eventTitle = eventTitle,
+                            eventDate = eventDate,
+                            eventTime = eventTime,
+                            eventImage = imagePath!!,
+                            eventDecs = eventDecs
+                        )
+                        eventDao?.updateEvent(updatedEvent)
                         database.child(eventKey!!).updateChildren(user)
                             .addOnSuccessListener {
                                 Toast.makeText(this, "Successfully Updated", Toast.LENGTH_SHORT)

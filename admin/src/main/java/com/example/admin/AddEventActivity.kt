@@ -23,7 +23,15 @@ import android.widget.ImageView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import com.example.admin.dao.EventDao
+import com.example.admin.database.EventAppDb
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 
 class AddEventActivity : AppCompatActivity() {
@@ -32,6 +40,8 @@ class AddEventActivity : AppCompatActivity() {
     private var selectedMinute: Int? = null
     private var imageURL: String? = null
     var url: Uri? = null
+
+    var imagePath : String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event)
@@ -122,6 +132,32 @@ class AddEventActivity : AppCompatActivity() {
         return "E${String.format("%3d", randomNumber)}"
     }
 
+    fun getImageFilePath(uri: Uri): String{
+        return saveImageToFile(uri)
+    }
+
+    private fun saveImageToFile(uri: Uri): String {
+        val inputStream: InputStream? = this.contentResolver.openInputStream(uri)
+        val file = File(this.cacheDir, "${System.currentTimeMillis()}.jpg")
+        val outputStream = FileOutputStream(file)
+        try {
+            inputStream?.use { input ->
+                outputStream.use { output ->
+                    val buffer = ByteArray(4 * 1024) // 4K buffer size
+                    while (true) {
+                        val bytesRead = input.read(buffer)
+                        if (bytesRead == -1) break
+                        output.write(buffer, 0, bytesRead)
+                    }
+                    output.flush()
+                }
+            }} catch (e: Exception) {
+            Log.e("Error", "Error message", e)
+        }
+        Log.i("Testing", "saveImageFile1")
+        return file.absolutePath
+    }
+
     private fun saveEventDataAndImage(){
         val storageReference = FirebaseStorage.getInstance().reference.child("Task Images")
             .child(url!!.lastPathSegment!!)
@@ -135,6 +171,7 @@ class AddEventActivity : AppCompatActivity() {
             while (!uriTask.isComplete);
             val urlImage = uriTask.result
             imageURL = urlImage.toString()
+            imagePath = getImageFilePath(url!!)
             saveEventData()
             dialog.dismiss()
 
@@ -182,8 +219,28 @@ class AddEventActivity : AppCompatActivity() {
             eventDecs = eventDecs,
             eventDate = formattedDate,
             eventTime = formattedTime,
-            eventImage = imageURL.toString(),
+            eventImage = imagePath!!,
         )
+
+
+
+        val eventDatabase = EventAppDb.getAppDatabase(this)
+        val eventDao = eventDatabase?.eventDao()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Insert event data into Room Database
+                eventDao?.insertEvent(event)
+
+                runOnUiThread {
+                    Toast.makeText(this@AddEventActivity, "Event data inserted successfully", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(this@AddEventActivity, "Error inserting event data: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+                Log.e("Database", "Error inserting event data: ${e.message}", e)
+            }
+        }
 
         val eventMap = HashMap<String, Any>()
         eventMap["referenceNo"] = referenceNo
