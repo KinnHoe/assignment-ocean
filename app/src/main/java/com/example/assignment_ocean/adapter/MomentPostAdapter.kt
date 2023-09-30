@@ -85,7 +85,7 @@ class MomentPostAdapter(private val listener: MomentPostAdapterListener) : ListA
         fun formatTimestamp(timestamp: Long): String {
             val malaysiaTimeZone = TimeZone.getTimeZone("Asia/Kuala_Lumpur")
 
-            val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault())
+            val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss a", Locale.getDefault())
             sdf.timeZone = malaysiaTimeZone
 
             val malaysiaTime = sdf.format(Date(timestamp))

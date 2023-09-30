@@ -35,7 +35,7 @@
         android:id="@+id/post_image"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:scaleType="centerCrop"
+        android:scaleType="centerInside"
         app:layout_constraintTop_toBottomOf="@id/user_photo_image"
         app:layout_constraintBottom_toTopOf="@id/like_image"
         android:src="@drawable/image_placeholder"/>
