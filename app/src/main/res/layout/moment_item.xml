@@ -9,62 +9,69 @@
         android:id="@+id/user_photo_image"
         style="@style/icon"
         android:src="@drawable/person"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
         android:id="@+id/username_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        tools:text="willsmith"
         android:textColor="@color/black"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/user_photo_image"
         app:layout_constraintStart_toEndOf="@id/user_photo_image"
         app:layout_constraintTop_toTopOf="@id/user_photo_image"
-        tools:text="willsmith" />
+        app:layout_constraintBottom_toBottomOf="@id/user_photo_image"/>
 
     <ImageView
         android:id="@+id/more_image"
         style="@style/icon"
         android:src="@drawable/ic_more"
-        app:layout_constraintBottom_toBottomOf="@id/user_photo_image"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/user_photo_image" />
+        app:layout_constraintTop_toTopOf="@id/user_photo_image"
+        app:layout_constraintBottom_toBottomOf="@id/user_photo_image"/>
 
     <ImageView
         android:id="@+id/post_image"
         android:layout_width="match_parent"
-        android:layout_height="562dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/image_placeholder"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
         app:layout_constraintTop_toBottomOf="@id/user_photo_image"
+        app:layout_constraintBottom_toTopOf="@id/like_image"
+        android:src="@drawable/image_placeholder"/>
+
+    <ImageView
+        android:id="@+id/like_image"
+        app:layout_constraintTop_toBottomOf="@id/post_image"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintBottom_toTopOf="@id/timestamp_text"
+        android:layout_height="45dp"
+        android:layout_width="45dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_likes_border"/>
 
     <TextView
         android:id="@+id/timestamp_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        tools:text="2023-09-26 13:56:26"
         android:textColor="@color/black"
-        android:text="@{post.timestamp}"
+        app:layout_constraintTop_toBottomOf="@id/like_image"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/post_image"
-        tools:text="2023-09-26 13:56:26"/>
+        app:layout_constraintBottom_toTopOf="@id/caption_text"
+        android:layout_marginStart="10dp"/>
 
     <TextView
         android:id="@+id/caption_text"
-        android:layout_width="410dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@{post.caption}"
+        android:paddingStart="10dp"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@id/timestamp_text"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timestamp_text"
-        app:layout_constraintVertical_bias="0.103"
-        tools:text="Caption" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="willsmith This is a caption for the post. It's actually a very long caption."/>
+
 
 
 

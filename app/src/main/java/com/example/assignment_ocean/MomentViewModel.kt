@@ -18,5 +18,8 @@ class MomentViewModel : ViewModel() {
     fun deletePost(post: Post, onSuccess: () -> Unit, onError: (String) -> Unit) {
         momentRepository.deletePost(post, onSuccess, onError)
     }
-
 }
+
+
+
+

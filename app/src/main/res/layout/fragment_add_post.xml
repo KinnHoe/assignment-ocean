@@ -27,7 +27,7 @@
             <ImageView
                 android:id="@+id/uploadImage"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="200dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/uploadimg"
                 android:layout_marginTop="10dp"

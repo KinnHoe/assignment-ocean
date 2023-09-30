@@ -31,6 +31,8 @@ class UpdatePostFragment : Fragment() {
     private var postId: String? = null
     private var caption: String? = null
     private var imageURL: String? = null
+    private var navigationCallback: (() -> Unit)? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +59,10 @@ class UpdatePostFragment : Fragment() {
             .load(imageURL)
             .placeholder(R.drawable.uploadimg) // Replace with your placeholder image
             .into(binding.reuploadImage)
+
+        binding.closeImage.setOnClickListener {
+            navigateBackToMoment()
+        }
     }
 
     private fun setupViews() {
@@ -214,11 +220,23 @@ class UpdatePostFragment : Fragment() {
                 if (task.isSuccessful) {
                     Toast.makeText(requireContext(), "Post updated", Toast.LENGTH_SHORT).show()
                     clearFields()
+
+                    // Call the navigation callback to go back to the Moment screen
+                    navigationCallback?.invoke()
                 } else {
                     showError("Failed to update post: ${task.exception?.message}")
                 }
             }
     }
+
+    fun setNavigationCallback(callback: () -> Unit) {
+        navigationCallback = callback
+    }
+
+    private fun navigateBackToMoment() {
+        navigationCallback?.invoke()
+    }
+
 
     private fun clearFields() {
         binding.reuploadCaption.text.clear()

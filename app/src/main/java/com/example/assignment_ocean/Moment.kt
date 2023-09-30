@@ -40,12 +40,16 @@ class Moment : Fragment(), MomentPostAdapterListener {
             adapter = momentAdapter
         }
 
-        // Observe LiveData from ViewModel
+        // Observe LiveData from ViewModel for moment data changes
         viewModel.getMomentData().observe(viewLifecycleOwner, { momentDataList ->
             // Update the adapter with the new data
             momentAdapter.submitList(momentDataList)
         })
+
     }
+
+
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -106,15 +110,15 @@ class Moment : Fragment(), MomentPostAdapterListener {
         bundle.putString("imageURL", post.photo) // Assuming post.photo contains the image URL
         updateFragment.arguments = bundle
 
+        // Set the navigation callback
+        updateFragment.setNavigationCallback { navigateToMomentFragment() }
+
         val transaction = requireActivity().supportFragmentManager.beginTransaction()
         // Replace R.id.fragment_container with the actual ID of the container where you want to replace the fragment
         transaction.replace(R.id.frame_layout, updateFragment)
         transaction.addToBackStack(null) // Optional: Add to back stack for back navigation
         transaction.commit()
     }
-
-
-
 
     override fun onDeletePostClicked(post: Post) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
@@ -126,7 +130,9 @@ class Moment : Fragment(), MomentPostAdapterListener {
                 viewModel.deletePost(
                     post,
                     onSuccess = {
-                        // Show a Toast message for successful deletion
+                        // Remove the post from the adapter after successful deletion
+                        momentAdapter.currentList.toMutableList().remove(post)
+                        momentAdapter.submitList(momentAdapter.currentList)
                         Toast.makeText(requireContext(), "Post deleted", Toast.LENGTH_SHORT).show()
                     },
                     onError = { errorMessage ->
@@ -139,11 +145,17 @@ class Moment : Fragment(), MomentPostAdapterListener {
                 // User canceled the deletion, dismiss the dialog
                 dialog.dismiss()
             }
-            setCancelable(false) // Prevent dismissing the dialog by clicking outside or pressing back button
+            setCancelable(false) // Prevent dismissing the dialog by clicking outside or pressing the back button
         }
 
         val alertDialog = alertDialogBuilder.create()
         alertDialog.show()
+    }
+
+
+    private fun navigateToMomentFragment() {
+        val fragmentManager = requireActivity().supportFragmentManager
+        fragmentManager.popBackStack()
     }
 
 }
