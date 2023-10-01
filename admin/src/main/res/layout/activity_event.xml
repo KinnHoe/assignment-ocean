@@ -9,6 +9,32 @@
     android:orientation="vertical"
     android:gravity="center_vertical"
     tools:context=".AddEventActivity">
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topnavbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#1C4574"
+        app:subtitleTextColor="#D8CACA"
+        app:title="marine"
+        app:titleTextColor="#D8CACA">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_back"
+                android:contentDescription="Person Icon"
+                android:layout_centerVertical="true"
+                android:layout_gravity="end"
+                app:tint="@android:color/white" />
+
+
+        </RelativeLayout>
+    </com.google.android.material.appbar.MaterialToolbar>
 
 
     <LinearLayout
@@ -19,6 +45,7 @@
         android:layout_marginTop="10dp"
         android:layout_gravity="center_horizontal"
         android:padding="20dp">
+
 
         <ImageView
             android:layout_width="match_parent"

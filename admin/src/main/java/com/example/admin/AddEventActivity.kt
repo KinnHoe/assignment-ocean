@@ -3,28 +3,24 @@ package com.example.admin
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import com.example.admin.data.EventModel
-import java.text.DateFormatSymbols
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
-import com.example.admin.util.FirebaseUtil
-import java.util.Random
-import java.text.SimpleDateFormat
-import android.net.Uri
-import android.widget.ImageView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import com.example.admin.dao.EventDao
+import com.example.admin.data.EventModel
 import com.example.admin.database.EventAppDb
+import com.example.admin.util.FirebaseUtil
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +28,13 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-
+import java.text.DateFormatSymbols
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
+import java.util.Random
 
 class AddEventActivity : AppCompatActivity() {
     private var selectedDate: Date? = null
@@ -41,7 +43,8 @@ class AddEventActivity : AppCompatActivity() {
     private var imageURL: String? = null
     var url: Uri? = null
 
-    var imagePath : String? = null
+    var imagePath: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event)
@@ -49,6 +52,7 @@ class AddEventActivity : AppCompatActivity() {
         val datePickerButton = findViewById<Button>(R.id.datePickerButton)
         val timePickerButton = findViewById<Button>(R.id.timePickerButton)
         val uploadEventImage = findViewById<ImageView>(R.id.uploadEventImage)
+        val backIcon= findViewById<ImageView>(R.id.back)
 
         val activityResultLauncher = registerForActivityResult<Intent, ActivityResult>(
             ActivityResultContracts.StartActivityForResult()) { result ->
@@ -61,6 +65,12 @@ class AddEventActivity : AppCompatActivity() {
             }
         }
 
+        backIcon.setOnClickListener {
+            val intent = Intent(this@AddEventActivity, RetrieveEventActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            finish()
+        }
 
         uploadEventImage.setOnClickListener {
             val photoPicker = Intent(Intent.ACTION_PICK)
@@ -68,8 +78,7 @@ class AddEventActivity : AppCompatActivity() {
             activityResultLauncher.launch(photoPicker)
         }
 
-
-        datePickerButton.setOnClickListener{
+        datePickerButton.setOnClickListener {
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kuala_Lumpur"))
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
@@ -117,22 +126,19 @@ class AddEventActivity : AppCompatActivity() {
             timePickerDialog.show()
         }
 
-
-
-        saveBtn.setOnClickListener{
-            saveEventDataAndImage()
+        saveBtn.setOnClickListener {
+            checkEventTitleAndSave()
         }
 
         datePickerButton.text = "-"
-
-
     }
+
     private fun generateReferenceNo(): String {
         val randomNumber = (Random().nextDouble() * (999999999999L)).toLong()
         return "E${String.format("%3d", randomNumber)}"
     }
 
-    fun getImageFilePath(uri: Uri): String{
+    fun getImageFilePath(uri: Uri): String {
         return saveImageToFile(uri)
     }
 
@@ -151,14 +157,48 @@ class AddEventActivity : AppCompatActivity() {
                     }
                     output.flush()
                 }
-            }} catch (e: Exception) {
+            }
+        } catch (e: Exception) {
             Log.e("Error", "Error message", e)
         }
         Log.i("Testing", "saveImageFile1")
         return file.absolutePath
     }
 
-    private fun saveEventDataAndImage(){
+    private fun checkEventTitleAndSave() {
+        val eventTitle = findViewById<TextView>(R.id.uploadEventTitle).text.toString()
+        val eventDecs = findViewById<TextView>(R.id.uploadEventDesc).text.toString()
+
+        // Check if any of the required fields is empty
+        if (eventTitle.isBlank() || eventDecs.isBlank() || selectedDate == null) {
+            Toast.makeText(this, "Please fill in all required fields.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Check Firebase Database for existing event title
+        val firebaseRef = FirebaseUtil().getEventsReference()
+        val eventTitleToCheck = eventTitle.toLowerCase(Locale.getDefault())
+
+        firebaseRef.orderByChild("eventTitle").equalTo(eventTitleToCheck)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        // The event title already exists in Firebase
+                        Toast.makeText(this@AddEventActivity, "Event title already exists", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@AddEventActivity,"Event title already exists",Toast.LENGTH_SHORT).show()
+                        saveEventDataAndImage()
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e("FirebaseError", "Error checking event title: ${databaseError.message}", databaseError.toException())
+                }
+            })
+    }
+
+
+    private fun saveEventDataAndImage() {
         val storageReference = FirebaseStorage.getInstance().reference.child("Task Images")
             .child(url!!.lastPathSegment!!)
         val builder = AlertDialog.Builder(this)
@@ -174,22 +214,18 @@ class AddEventActivity : AppCompatActivity() {
             imagePath = getImageFilePath(url!!)
             saveEventData()
             dialog.dismiss()
-
         }.addOnFailureListener {
             dialog.dismiss()
         }
-
-
     }
-    private fun saveEventData(){
 
+    private fun saveEventData() {
         val eventTitle = findViewById<TextView>(R.id.uploadEventTitle).text.toString()
         val eventDecs = findViewById<TextView>(R.id.uploadEventDesc).text.toString()
 
         // Check if any of the required fields is empty
-        if (eventTitle.isBlank() || eventDecs.isBlank() || selectedDate == null ) {
-            Toast.makeText(this,"Please fill in all required fields.", Toast.LENGTH_SHORT).show()
-
+        if (eventTitle.isBlank() || eventDecs.isBlank() || selectedDate == null) {
+            Toast.makeText(this, "Please fill in all required fields.", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -204,13 +240,10 @@ class AddEventActivity : AppCompatActivity() {
         calendar.set(Calendar.HOUR_OF_DAY, selectedHour!!)
         calendar.set(Calendar.MINUTE, selectedMinute!!)
 
-
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val formattedDate = dateFormat.format(calendar.time)
         val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
         val formattedTime = timeFormat.format(calendar.time)
-
-
 
         val event = EventModel(
             firebaseId = eventKey!!,
@@ -222,15 +255,12 @@ class AddEventActivity : AppCompatActivity() {
             eventImage = imagePath!!,
         )
 
-
-
         val eventDatabase = EventAppDb.getAppDatabase(this)
         val eventDao = eventDatabase?.eventDao()
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 // Insert event data into Room Database
                 eventDao?.insertEvent(event)
-
                 runOnUiThread {
                     Toast.makeText(this@AddEventActivity, "Event data inserted successfully", Toast.LENGTH_SHORT).show()
                 }
@@ -252,31 +282,22 @@ class AddEventActivity : AppCompatActivity() {
 
         eventRef.child(eventKey!!).setValue(eventMap).addOnSuccessListener {
             // Data was successfully written to Firebase
-            Toast.makeText(this,"Event submitted successfully", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Event submitted successfully", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener { e ->
+            // An error occurred while writing data
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            Log.e("FirebaseError", "Error writing to Firebase: ${e.message}", e)
+        }.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // The operation completed successfully
+            } else {
+                // The operation failed, and you can check task.exception for more details
+                Log.e(
+                    "FirebaseError",
+                    "Error writing to Firebase: ${task.exception?.message}",
+                    task.exception
+                )
+            }
         }
-            .addOnFailureListener { e ->
-                // An error occurred while writing data
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                Log.e("FirebaseError", "Error writing to Firebase: ${e.message}", e)
-            }
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // The operation completed successfully
-                } else {
-                    // The operation failed, and you can check task.exception for more details
-                    Log.e(
-                        "FirebaseError",
-                        "Error writing to Firebase: ${task.exception?.message}",
-                        task.exception
-                    )
-                }
-            }
-
     }
-
-
-
 }
-
-
-

@@ -63,7 +63,15 @@ class UpdateEventActivity : AppCompatActivity() {
         val eventDescriptionTextView = findViewById<EditText>(R.id.uploadEventDesc)
         val eventTime = findViewById<Button>(R.id.timePickerButton)
         val saveBtn = findViewById<Button>(R.id.saveButton)
+        val backIcon= findViewById<ImageView>(R.id.back)
 
+
+        backIcon.setOnClickListener {
+            val intent = Intent(this@UpdateEventActivity, RetrieveEventActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            finish()
+        }
 
         // Check if eventTitle is not null and fetch event data
         if (eventTitle != null) {

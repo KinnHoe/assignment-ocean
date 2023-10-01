@@ -2,6 +2,7 @@ package com.example.admin
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +28,7 @@ class RetrieveEventActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_retrieve_event)
-
+        val uplaodBtn = findViewById<Button>(R.id.mainUpload)
         val topNavEventAdmin = findViewById<ImageView>(R.id.top_nav_event1)
         val topNavPersonAdmin = findViewById<ImageView>(R.id.top_nav_person1)
         val topNavOceanlifeAdmin = findViewById<ImageView>(R.id.top_nav_oceanlife1)
@@ -51,7 +52,15 @@ class RetrieveEventActivity : AppCompatActivity() {
         }
 
         topNavEventAdmin.setOnClickListener {
-            Toast.makeText(this,"Set Intent at admin main activity",Toast.LENGTH_SHORT).show()
+            val intent = Intent(this@RetrieveEventActivity, RetrieveEventActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            finish()
+        }
+
+        uplaodBtn.setOnClickListener {
+            val intent = Intent(this@RetrieveEventActivity, AddEventActivity::class.java)
+            startActivity(intent)
         }
 
 
