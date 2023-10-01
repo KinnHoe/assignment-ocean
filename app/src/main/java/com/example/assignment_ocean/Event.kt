@@ -25,6 +25,8 @@ class Event : Fragment() {
     private lateinit var dbref: DatabaseReference
     private lateinit var adapter: EventAdapter
     private lateinit var recyclerView: RecyclerView
+    var username: String? = null
+    var getusername: String? = null
     private lateinit var eventArrayList: ArrayList<EventModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +40,9 @@ class Event : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        val user = username
+        getusername = user
         return inflater.inflate(R.layout.fragment_event, container, false)
     }
 
@@ -48,7 +53,7 @@ class Event : Fragment() {
         recyclerView = view.findViewById(R.id.recycleView)
         recyclerView.layoutManager = layoutManager
         recyclerView.setHasFixedSize(true)
-        adapter = EventAdapter(eventArrayList)
+        adapter = EventAdapter(eventArrayList, getusername!!)
         recyclerView.adapter = adapter
 
         // Initialize the SearchView here

@@ -6,6 +6,7 @@
     import android.view.ViewGroup
     import android.widget.Button
     import android.widget.TextView
+    import android.widget.Toast
     import androidx.fragment.app.FragmentActivity
     import androidx.recyclerview.widget.RecyclerView
     import com.example.assignment_ocean.data.EventModel
@@ -16,7 +17,7 @@
     import com.example.assignment_ocean.EventDetail
 
 
-    class EventAdapter(private var eventList: ArrayList<EventModel>) : RecyclerView.Adapter<EventAdapter.MyViewHolder>(){
+    class EventAdapter(private var eventList: ArrayList<EventModel>, private val username: String) : RecyclerView.Adapter<EventAdapter.MyViewHolder>(){
 
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -43,9 +44,11 @@
             holder.eventDate.text = currentEvent.eventDate
 
             holder.interestedEvent.setOnClickListener {
+                Toast.makeText(holder.itemView.context, username,Toast.LENGTH_SHORT).show()
                 val context = holder.itemView.context
                 val intent = Intent(context, EventDetail::class.java)
                 intent.putExtra("eventTitle", currentEvent.eventTitle)
+                intent.putExtra("username", username)
                 context.startActivity(intent)
             }
 

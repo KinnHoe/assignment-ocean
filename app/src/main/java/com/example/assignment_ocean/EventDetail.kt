@@ -23,6 +23,7 @@ class EventDetail : AppCompatActivity() {
         val backNav = findViewById<ImageView>(R.id.BackIcon)
         // Retrieve the event title from the intent extras
         val eventTitle = intent.getStringExtra("eventTitle")
+        val username = intent.getStringExtra("username")
 
         // Initialize Firebase database reference
         val database: FirebaseDatabase = FirebaseDatabase.getInstance()
