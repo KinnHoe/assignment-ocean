@@ -1,5 +1,6 @@
 package com.example.assignment_ocean
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -42,7 +43,13 @@ class MainActivity : AppCompatActivity() {
 
             when(menuItem.itemId){
                 R.id.nav_person -> {
-                    Toast.makeText(this,"link to setting file using intent in MainActivity.kt",Toast.LENGTH_SHORT).show()
+
+                    val username = intent.getStringExtra("username")
+
+                    val profileIntent = Intent(this@MainActivity, ProfileActivity::class.java)
+                    profileIntent.putExtra("username", username)
+                    startActivity(profileIntent)
+
                     true
                 }
                 else -> {
