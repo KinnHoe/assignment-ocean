@@ -1,59 +1,106 @@
 package com.example.assignment_ocean
 
+
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.assignment_ocean.adapter.ImagesHomeAdapter
+import com.example.assignment_ocean.data.DataClass
+import com.example.assignment_ocean.databinding.FragmentCatogoriesBoatBinding
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.StorageReference
+import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [CatogoriesBoat.newInstance] factory method to
- * create an instance of this fragment.
- */
 class CatogoriesBoat : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var binding: FragmentCatogoriesBoatBinding
+    private var databaseReference: DatabaseReference? = null
+    private var eventListener: ValueEventListener? = null
+    private lateinit var imageHomeCatList: ArrayList<DataClass>
+    private lateinit var adapter: ImagesHomeAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_catogories_boat, container, false)
+        binding = FragmentCatogoriesBoatBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CatogoriesBoat.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            CatogoriesBoat().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val gridLayoutManager = GridLayoutManager(requireContext(), 1)
+        binding.recyclerView.layoutManager = gridLayoutManager
+        binding.search.clearFocus()
+
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setCancelable(false)
+        builder.setView(R.layout.progress_layout)
+        val dialog = builder.create()
+        dialog.show()
+
+        imageHomeCatList = ArrayList()
+        adapter = ImagesHomeAdapter(requireContext(), imageHomeCatList)
+        binding.recyclerView.adapter = adapter
+        databaseReference = FirebaseDatabase.getInstance().getReference("Categories")
+        dialog.show()
+
+        eventListener = databaseReference!!.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                imageHomeCatList.clear()
+                for (itemSnapshot in snapshot.children) {
+                    val dataClass = itemSnapshot.getValue(DataClass::class.java)
+                    if (dataClass != null) {
+                        imageHomeCatList.add(dataClass)
+                    }
                 }
+                adapter.notifyDataSetChanged()
+                dialog.dismiss()
             }
+
+            override fun onCancelled(error: DatabaseError) {
+                dialog.dismiss()
+            }
+        })
+        binding.imagesGallery.setOnClickListener {
+            val intent = Intent(requireContext(), HomeImageGallery::class.java)
+            startActivity(intent)
+        }
+
+        binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != null) {
+                    searchList(newText)
+                }
+                return true
+            }
+        })
+    }
+
+    private fun searchList(text: String) {
+        val searchList = ArrayList<DataClass>()
+        for (dataClass in imageHomeCatList) {
+            if (dataClass.dataTitle?.lowercase(Locale.getDefault())
+                    ?.contains(text.lowercase(Locale.getDefault())) == true
+            ) {
+                searchList.add(dataClass)
+            }
+        }
+        adapter.searchDataList(searchList)
     }
 }
