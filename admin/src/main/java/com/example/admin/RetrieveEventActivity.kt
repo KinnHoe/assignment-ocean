@@ -44,7 +44,10 @@ class RetrieveEventActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         topNavPersonAdmin.setOnClickListener {
-            Toast.makeText(this,"Set Intent at admin main activity",Toast.LENGTH_SHORT).show()
+            val intent = Intent(this@RetrieveEventActivity, OceanMainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            finish()
         }
 
         topNavOceanlifeAdmin.setOnClickListener {

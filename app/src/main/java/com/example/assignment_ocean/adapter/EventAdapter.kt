@@ -49,6 +49,7 @@
                 val intent = Intent(context, EventDetail::class.java)
                 intent.putExtra("eventTitle", currentEvent.eventTitle)
                 intent.putExtra("username", username)
+                intent.putExtra("eventImage",holder.eventImage.toString())
                 context.startActivity(intent)
             }
 

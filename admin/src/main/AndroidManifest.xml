@@ -11,6 +11,33 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Assignmentocean">
         <activity
+            android:name=".ImageRetrieveActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ImageRetrieve"
+            android:exported="false" />
+        <activity
+            android:name=".ImagesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UploadActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UpdateImageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UpdateActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Images"
+            android:exported="false" />
+        <activity
+            android:name=".DeleteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OceanMainActivity"
+            android:exported="false" />
+        <activity
             android:name=".UpdateEventActivity"
             android:exported="false" />
         <activity

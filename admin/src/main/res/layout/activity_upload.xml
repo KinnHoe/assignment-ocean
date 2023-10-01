@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".UploadActivity">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/lavender_border"
+            android:padding="20dp">
+
+            <ImageView
+                android:id="@+id/imageView4"
+                android:layout_width="258dp"
+                android:layout_height="82dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.128"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/admincreate"
+                tools:ignore="MissingConstraints" />
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:src="@drawable/insert"
+                android:layout_marginLeft="110dp"
+                android:id="@+id/uploadImage"
+                android:layout_marginTop="10dp"
+                android:scaleType="fitXY"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/uploadTitle"
+                android:background="@drawable/blue_border"
+                android:layout_marginTop="40dp"
+                android:padding="16dp"
+                android:maxLines="1"
+                android:hint="CREATE Category NAME"
+                android:textColorHint="@color/cornflower_blue"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/baby_blue"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/uploadDesc"
+                android:background="@drawable/blue_border"
+                android:layout_marginTop="20dp"
+                android:padding="16dp"
+                android:hint="CREATE Category DESCRIPTION"
+                android:textColorHint="@color/cornflower_blue"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/baby_blue"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/uploadPriority"
+                android:background="@drawable/blue_border"
+                android:layout_marginTop="20dp"
+                android:padding="16dp"
+                android:hint="CREATE Category TYPE (EX:MAMMALS)"
+                android:textColorHint="@color/cornflower_blue"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/baby_blue"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/uploadNum"
+                android:background="@drawable/blue_border"
+                android:layout_marginTop="20dp"
+                android:padding="16dp"
+                android:hint="CREATE Category NUMBER (HOW MUCH)"
+                android:textColorHint="@color/cornflower_blue"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/baby_blue"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/uploadSize"
+                android:background="@drawable/blue_border"
+                android:layout_marginTop="20dp"
+                android:padding="16dp"
+                android:hint="CREATE Category SIZE (20 CM/KG)"
+                android:textColorHint="@color/cornflower_blue"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/baby_blue"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/uploadRange"
+                android:background="@drawable/blue_border"
+                android:layout_marginTop="20dp"
+                android:padding="16dp"
+                android:hint="CREATE Category Range (WEST PACIFIC)"
+                android:textColorHint="@color/cornflower_blue"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/baby_blue"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="CREATE Details"
+                android:background="@drawable/blue_border"
+                android:id="@+id/saveButton"
+                android:textSize="18sp"
+                android:layout_marginTop="20dp"
+                app:cornerRadius = "20dp"/>
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</ScrollView>
