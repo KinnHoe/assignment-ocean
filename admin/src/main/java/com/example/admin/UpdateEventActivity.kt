@@ -145,7 +145,7 @@ class UpdateEventActivity : AppCompatActivity() {
             activityResultLauncher.launch(photoPicker)
         }
 
-        eventDateTextView.setOnClickListener{
+        eventDateTextView.setOnClickListener {
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kuala_Lumpur"))
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
@@ -154,24 +154,39 @@ class UpdateEventActivity : AppCompatActivity() {
             val datePickerDialog = DatePickerDialog(
                 this,
                 { _, selectedYear, selectedMonth, selectedDay ->
-                    calendar.set(selectedYear, selectedMonth, selectedDay)
-                    selectedDate = calendar.time
+                    try {
+                        // Create a Calendar instance for the selected date
+                        val selectedCalendar = Calendar.getInstance()
+                        selectedCalendar.set(selectedYear, selectedMonth, selectedDay)
+                        val selectedDate = selectedCalendar.time
 
-                    val selectedDateText = String.format(
-                        Locale.getDefault(),
-                        "%s %02d %d",
-                        DateFormatSymbols().months[selectedMonth],
-                        selectedDay,
-                        selectedYear
-                    )
-                    eventDateTextView.text = selectedDateText
-                    eventDateModified = eventDateTextView.text.toString()
-
+                        // Check if the selected date is earlier than today
+                        val today = Calendar.getInstance().time
+                        if (selectedDate.before(today)) {
+                            // Display an error message
+                            Toast.makeText(this, "Invalid date. Please choose a date today or later.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // Valid date; update the button text
+                            val selectedDateText = String.format(
+                                Locale.getDefault(),
+                                "%s %02d %d",
+                                DateFormatSymbols().months[selectedMonth],
+                                selectedDay,
+                                selectedYear
+                            )
+                            eventDateTextView.text = selectedDateText
+                            eventDateModified = eventDateTextView.text.toString()
+                        }
+                    } catch (e: Exception) {
+                        // Handle any exception that may occur while parsing the date
+                        Toast.makeText(this, "Invalid date format. Please try again.", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 year, month, day
             )
             datePickerDialog.show()
         }
+
 
         eventTime.setOnClickListener {
             val calendar = Calendar.getInstance()

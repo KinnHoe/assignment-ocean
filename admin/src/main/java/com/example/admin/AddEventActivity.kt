@@ -87,22 +87,37 @@ class AddEventActivity : AppCompatActivity() {
             val datePickerDialog = DatePickerDialog(
                 this,
                 { _, selectedYear, selectedMonth, selectedDay ->
-                    calendar.set(selectedYear, selectedMonth, selectedDay)
-                    selectedDate = calendar.time
+                    try {
+                        calendar.set(selectedYear, selectedMonth, selectedDay)
+                        val currentDate = calendar.time
 
-                    val selectedDateText = String.format(
-                        Locale.getDefault(),
-                        "%s %02d %d",
-                        DateFormatSymbols().months[selectedMonth],
-                        selectedDay,
-                        selectedYear
-                    )
-                    datePickerButton.text = selectedDateText
+                        // Check if the selected date is earlier than today
+                        val today = Date()
+                        if (currentDate.before(today)) {
+                            // Display an error message
+                            Toast.makeText(this, "Invalid date. Please choose a date today or later.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // Valid date; update the button text
+                            val selectedDateText = String.format(
+                                Locale.getDefault(),
+                                "%s %02d %d",
+                                DateFormatSymbols().months[selectedMonth],
+                                selectedDay,
+                                selectedYear
+                            )
+                            datePickerButton.text = selectedDateText
+                            selectedDate = currentDate
+                        }
+                    } catch (e: Exception) {
+                        // Handle any exception that may occur while parsing the date
+                        Toast.makeText(this, "Invalid date format. Please try again.", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 year, month, day
             )
             datePickerDialog.show()
         }
+
 
         timePickerButton.setOnClickListener {
             val calendar = Calendar.getInstance()

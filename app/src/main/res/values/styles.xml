@@ -64,4 +64,13 @@
         <item name="cornerSizeTopRight">5dp</item>
         <item name="color">@color/white</item>
     </style>
+
+    <style name="verticalroundedeventimage" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeBottomLeft">5dp</item>
+        <item name="cornerSizeBottomRight">250dp</item>
+        <item name="cornerSizeTopLeft">5dp</item>
+        <item name="cornerSizeTopRight">5dp</item>
+        <item name="color">@color/white</item>
+    </style>
 </resources>

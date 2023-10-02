@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EventDetail">
+
+    <!-- Top app bar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topnavbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#1C4574"
+        app:subtitleTextColor="#D8CACA"
+        app:title="marine"
+        app:titleTextColor="#D8CACA">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- Add an ImageView for the icon -->
+            <ImageView
+                android:id="@+id/BackIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_back"
+                android:contentDescription="Person Icon"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                app:tint="@android:color/white"
+                />
+
+            <!-- Add a TextView for the menu text -->
+            <TextView
+                android:id="@+id/menuText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Marine"
+                android:textSize="18sp"
+                android:textColor="#D8CACA"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/BackIcon"
+                android:layout_marginStart="8dp" />
+
+        </RelativeLayout>
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <FrameLayout
+        android:id="@+id/frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/topnavbar">
+
+        <!-- Scrollable content -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/topnavbar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <!-- Container for eventImage (on the left) -->
+                <LinearLayout
+                    android:layout_width="25dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.78"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/eventImage"
+                        android:layout_width="308dp"
+                        android:layout_height="319dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/img"
+                        app:shapeAppearanceOverlay="@style/verticalroundedeventimage" />
+                </LinearLayout>
+
+                <!-- Container for other elements (on the right) -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/AbtTheEvent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="65dp"
+                        android:fontFamily="@font/baloo_paaji_2_bold"
+                        android:gravity="left"
+                        android:text="About The Event"
+                        android:textSize="35sp" />
+
+                    <TextView
+                        android:id="@+id/eventTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginRight="400dp"
+                        android:fontFamily="@font/baloo_paaji_2_semibold"
+                        android:text="Event Title"
+                        android:textSize="27sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_marginRight="5dp"
+                            android:src="@drawable/ic_time_event"
+                            app:tint="@color/grey" />
+                        <!-- Event Date -->
+                        <TextView
+                            android:id="@+id/eventDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="5dp"
+                            android:fontFamily="@font/baloo_paaji_2_semibold"
+                            android:text="Event Date"
+                            android:textColor="@color/grey"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/eventTime"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/baloo_paaji_2_semibold"
+                            android:text="Event Date"
+                            android:textColor="@color/grey"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <!-- Event Description -->
+                    <TextView
+                        android:id="@+id/eventDescription"
+                        android:layout_width="370dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="15dp"
+                        android:fontFamily="@font/baloo_paaji_2_semibold"
+                        android:text="Event Description"
+                        android:textSize="27sp" />
+
+                    <Button
+                        android:id="@+id/joinEvent"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="70dp"
+                        android:layout_marginEnd="10dp"
+
+                        android:layout_marginBottom="40dp"
+                        android:backgroundTint="@color/black"
+                        android:text="Join this Event"
+                        android:textSize="18sp"
+                        app:cornerRadius="20dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+</RelativeLayout>
