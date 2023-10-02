@@ -136,8 +136,8 @@ class UploadActivity : AppCompatActivity() {
         val categoryType = uploadPriority.text.toString().trim()
         if (categoryType.isEmpty()) {
             return "Category Type is required"
-        } else if (!categoryType.matches(Regex("^[a-zA-Z ]+\$"))) {
-            return "Category Type should contain only letters"
+        } else if (!categoryType.matches(Regex("^(mammals|marine fish|cetaceans|sharks|sea turtle|coral|seals|octopus|dugong|squid|jellyfish|crustacean|seahorse|eel|turtle|ocean fish)$", RegexOption.IGNORE_CASE))) {
+            return "Invalid Category Type. Please enter a valid ocean animal type."
         }
 
         // Validate Category Number (uploadNum)
@@ -152,8 +152,8 @@ class UploadActivity : AppCompatActivity() {
         val categorySize = uploadSize.text.toString().trim()
         if (categorySize.isEmpty()) {
             return "Category Size is required"
-        } else if (!categorySize.matches(Regex("^[a-zA-Z0-9 ]+\$"))) {
-            return "Category Size should contain only letters and numbers"
+        } else if (!categorySize.matches(Regex("^[0-9]+(\\.[0-9]+)?(cm|kg)$"))) {
+            return "Category Size should be a decimal number followed by 'cm' or 'kg'"
         }
 
         // Validate Category Range (uploadRange)
