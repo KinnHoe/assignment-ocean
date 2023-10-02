@@ -47,20 +47,31 @@ class UpdateActivity : AppCompatActivity() {
         }
 
         binding.updateButton.setOnClickListener {
-            val updateTitle = binding.updateTitle.text.toString()
-            val updateDesc = binding.updateDesc.text.toString()
-            val updatePriority = binding.updatePriority.text.toString()
-            val updateNum = binding.updateNum.text.toString()
-            val updateSize = binding.updateSize.text.toString()
-            val updateRange = binding.updateRange.text.toString()
+            val validationError = validateInputs()
+            if (validationError == null) {
+                // If inputs are valid, proceed with updating data
+                val updateTitle = binding.updateTitle.text.toString()
+                val updateDesc = binding.updateDesc.text.toString()
+                val updatePriority = binding.updatePriority.text.toString()
+                val updateNum = binding.updateNum.text.toString()
+                val updateSize = binding.updateSize.text.toString()
+                val updateRange = binding.updateRange.text.toString()
 
-            if (dataTitle != null) {
-                updateData(dataTitle!!, updateTitle, updateDesc, updatePriority, updateNum, updateSize, updateRange)
+                if (dataTitle != null) {
+                    updateData(dataTitle!!, updateTitle, updateDesc, updatePriority, updateNum, updateSize, updateRange)
+                } else {
+                    // Handle the case where dataTitle is not available
+                    Toast.makeText(this, "Invalid Data Title", Toast.LENGTH_SHORT).show()
+                }
             } else {
-                // Handle the case where dataTitle is not available
-                Toast.makeText(this, "Invalid Data Title", Toast.LENGTH_SHORT).show()
+                // Display validation message
+                Toast.makeText(this, validationError, Toast.LENGTH_SHORT).show()
             }
         }
+
+
+
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -170,4 +181,55 @@ class UpdateActivity : AppCompatActivity() {
                 Toast.makeText(this, "Failed to Update", Toast.LENGTH_SHORT).show()
             }
     }
+
+
+    private fun validateInputs(): String? {
+        // Validate Category Name (updateTitle)
+        val categoryName = binding.updateTitle.text.toString().trim()
+        if (categoryName.isEmpty()) {
+            return "Category Name is required"
+        } else if (!categoryName.matches(Regex("^[a-zA-Z ]+\$"))) {
+            return "Category Name should contain only letters"
+        }
+
+        // Validate Category Description (updateDesc)
+        val categoryDesc = binding.updateDesc.text.toString().trim()
+        if (categoryDesc.isEmpty()) {
+            return "Category Description is required"
+        }
+
+        // Validate Category Type (updatePriority)
+        val categoryType = binding.updatePriority.text.toString().trim()
+        if (categoryType.isEmpty()) {
+            return "Category Type is required"
+        } else if (!categoryType.matches(Regex("^[a-zA-Z ]+\$"))) {
+            return "Category Type should contain only letters"
+        }
+
+        // Validate Category Number (updateNum)
+        val categoryNumber = binding.updateNum.text.toString().trim()
+        if (categoryNumber.isEmpty()) {
+            return "Category Number is required"
+        } else if (!categoryNumber.matches(Regex("^[0-9]+\$"))) {
+            return "Category Number should contain only numbers"
+        }
+
+        // Validate Category Size (updateSize)
+        val categorySize = binding.updateSize.text.toString().trim()
+        if (categorySize.isEmpty()) {
+            return "Category Size is required"
+        } else if (!categorySize.matches(Regex("^[a-zA-Z0-9 ]+\$"))) {
+            return "Category Size should contain only letters and numbers"
+        }
+
+        // Validate Category Range (updateRange)
+        val categoryRange = binding.updateRange.text.toString().trim()
+        if (categoryRange.isEmpty()) {
+            return "Category Range is required"
+        } else if (!categoryRange.matches(Regex("^[a-zA-Z ]+\$"))) {
+            return "Category Range should contain only letters"
+        }
+
+        return null
+       }
 }

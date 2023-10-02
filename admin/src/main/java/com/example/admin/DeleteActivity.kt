@@ -22,32 +22,78 @@ class DeleteActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.deleteButton.setOnClickListener {
-            val title = binding.deleteTitle.text.toString().trim() // Trim to remove leading/trailing spaces
-            if (title.isNotEmpty()) {
+            if (validateDeleteTitle()) {
+                val title = binding.deleteTitle.text.toString().trim()
                 deleteData(title)
             } else {
-                Toast.makeText(this, "Please enter the title name to delete", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter the title name to delete", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
+
     }
 
     private fun deleteData(title: String) {
-        database = FirebaseDatabase.getInstance().getReference("Categories")
-        database = FirebaseDatabase.getInstance().getReference("Image")
-        // Check if the title exists as a key in the database
-        database.child(title).addListenerForSingleValueEvent(object : ValueEventListener {
+        val categoriesDatabase = FirebaseDatabase.getInstance().getReference("Categories")
+        val imageDatabase = FirebaseDatabase.getInstance().getReference("Image")
+
+        // Check if the title exists in the "Categories" database
+        categoriesDatabase.child(title).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // Title exists, proceed with deletion
-                    database.child(title).removeValue().addOnSuccessListener {
+                    // Title exists in "Categories" database, proceed with deletion
+                    categoriesDatabase.child(title).removeValue().addOnSuccessListener {
                         binding.deleteTitle.text.clear()
-                        Toast.makeText(this@DeleteActivity, "Deleted", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@DeleteActivity,
+                            "Deleted from Categories",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        finish()
                     }.addOnFailureListener {
-                        Toast.makeText(this@DeleteActivity, "Unable to delete", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@DeleteActivity,
+                            "Unable to delete from Categories",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else {
-                    // Title doesn't exist in the database
-                    Toast.makeText(this@DeleteActivity, "Title not found in the database", Toast.LENGTH_SHORT).show()
+                    // if Title doesn't exist in the "Categories" database
+                    // thebn check is there in the "Image" database
+                    imageDatabase.child(title)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    // Title exists in "Image" database, proceed with deletion
+                                    imageDatabase.child(title).removeValue().addOnSuccessListener {
+                                        binding.deleteTitle.text.clear()
+                                        Toast.makeText(
+                                            this@DeleteActivity,
+                                            "Deleted from Image",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        finish()
+                                    }.addOnFailureListener {
+                                        Toast.makeText(
+                                            this@DeleteActivity,
+                                            "Unable to delete from Image",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                } else {
+                                    // Title doesn't exist in either database
+                                    Toast.makeText(
+                                        this@DeleteActivity,
+                                        "Title not found in the database",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+
+                            override fun onCancelled(databaseError: DatabaseError) {
+
+                            }
+                        })
                 }
             }
 
@@ -55,5 +101,18 @@ class DeleteActivity : AppCompatActivity() {
                 // Handle onCancelled if needed
             }
         })
+    }
+
+
+    private fun validateDeleteTitle(): Boolean {
+        val deleteTitle = binding.deleteTitle.text.toString().trim()
+        if (deleteTitle.isEmpty()) {
+            binding.deleteTitle.error = "Title is required"
+            return false
+        } else if (!deleteTitle.matches(Regex("^[a-zA-Z ]+\$"))) {
+            binding.deleteTitle.error = "Title should contain only letters"
+            return false
+        }
+        return true
     }
 }

@@ -45,7 +45,13 @@ class ImagesActivity : AppCompatActivity() {
             activityResultLauncher.launch(photoPicker)
         }
         binding.saveImageButton.setOnClickListener {
-            saveData()
+            val errorMessage = validateInputs()
+            if (errorMessage == null) {
+                saveData()
+            } else {
+                // Display the validation error message to the user
+                Toast.makeText(this@ImagesActivity, errorMessage, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -92,4 +98,15 @@ class ImagesActivity : AppCompatActivity() {
             ).show()
         }
     }
+
+    private fun validateInputs(): String? {
+        val textImage = binding.textImage.text.toString().trim()
+        if (textImage.isEmpty()) {
+            return "Image name is required"
+        } else if (!textImage.matches(Regex("^[a-zA-Z ]+\$"))) {
+            return "Image name should contain only letters no numbers and symbol"
+        }
+        return null
+        }
+
 }

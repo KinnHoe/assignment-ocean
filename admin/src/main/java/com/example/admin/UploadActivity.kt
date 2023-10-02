@@ -4,6 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,11 +24,26 @@ class UploadActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUploadBinding
     var imageURL: String? = null
     var uri: Uri? = null
-
+    private lateinit var uploadTitle: EditText
+    private lateinit var uploadDesc: EditText
+    private lateinit var uploadPriority: EditText
+    private lateinit var uploadNum: EditText
+    private lateinit var uploadSize: EditText
+    private lateinit var uploadRange: EditText
+    private lateinit var saveButton: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUploadBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Initialize your views
+        uploadTitle = findViewById(R.id.uploadTitle)
+        uploadDesc = findViewById(R.id.uploadDesc)
+        uploadPriority = findViewById(R.id.uploadPriority)
+        uploadNum = findViewById(R.id.uploadNum)
+        uploadSize = findViewById(R.id.uploadSize)
+        uploadRange = findViewById(R.id.uploadRange)
+        saveButton = findViewById(R.id.saveButton)
 
         val activityResultLauncher = registerForActivityResult<Intent, ActivityResult>(
             ActivityResultContracts.StartActivityForResult()) { result ->
@@ -44,7 +61,14 @@ class UploadActivity : AppCompatActivity() {
             activityResultLauncher.launch(photoPicker)
         }
         binding.saveButton.setOnClickListener {
-            saveData()
+            val validationError = validateInputs()
+            if (validationError == null) {
+                // If inputs are valid, proceed with saving data
+                saveData()
+            } else {
+                // Display the validation error message to the user
+                Toast.makeText(this@UploadActivity, validationError, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -92,4 +116,56 @@ class UploadActivity : AppCompatActivity() {
                 this@UploadActivity, e.message.toString(), Toast.LENGTH_SHORT).show()
         }
     }
+
+    private fun validateInputs(): String? {
+        // Validate Category Name (Title)
+        val categoryName = uploadTitle.text.toString().trim()
+        if (categoryName.isEmpty()) {
+            return "Category Name is required"
+        } else if (!categoryName.matches(Regex("^[a-zA-Z ]+\$"))) {
+            return "Category Name should contain only letters no numbers and symbol"
+        }
+
+        // Validate Category Description
+        val categoryDesc = uploadDesc.text.toString().trim()
+        if (categoryDesc.isEmpty()) {
+            return "Category Description is required"
+        }
+
+        // Validate Category Type (Priority)
+        val categoryType = uploadPriority.text.toString().trim()
+        if (categoryType.isEmpty()) {
+            return "Category Type is required"
+        } else if (!categoryType.matches(Regex("^[a-zA-Z ]+\$"))) {
+            return "Category Type should contain only letters"
+        }
+
+        // Validate Category Number (uploadNum)
+        val categoryNumber = uploadNum.text.toString().trim()
+        if (categoryNumber.isEmpty()) {
+            return "Category Number is required"
+        } else if (!categoryNumber.matches(Regex("^[0-9]+\$"))) {
+            return "Category Number should contain only numbers"
+        }
+
+        // Validate Category Size (uploadSize)
+        val categorySize = uploadSize.text.toString().trim()
+        if (categorySize.isEmpty()) {
+            return "Category Size is required"
+        } else if (!categorySize.matches(Regex("^[a-zA-Z0-9 ]+\$"))) {
+            return "Category Size should contain only letters and numbers"
+        }
+
+        // Validate Category Range (uploadRange)
+        val categoryRange = uploadRange.text.toString().trim()
+        if (categoryRange.isEmpty()) {
+            return "Category Range is required"
+        } else if (!categoryRange.matches(Regex("^[a-zA-Z ]+\$"))) {
+            return "Category Range should contain only letters"
+        }
+
+        return null
+    }
+
+
 }
