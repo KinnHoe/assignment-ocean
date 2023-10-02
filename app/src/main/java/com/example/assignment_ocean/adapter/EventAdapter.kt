@@ -1,6 +1,7 @@
     package com.example.assignment_ocean.adapter
 
     import android.content.Intent
+    import android.util.Log
     import android.view.LayoutInflater
     import android.view.View
     import android.view.ViewGroup
@@ -15,9 +16,22 @@
     import com.bumptech.glide.Glide
     import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
     import com.example.assignment_ocean.EventDetail
+    import com.example.assignment_ocean.data.UserJoinEventModel
+    import com.google.firebase.database.DataSnapshot
+    import com.google.firebase.database.DatabaseError
+    import com.google.firebase.database.DatabaseReference
+    import com.google.firebase.database.FirebaseDatabase
+    import com.google.firebase.database.ValueEventListener
 
 
     class EventAdapter(private var eventList: ArrayList<EventModel>, private val username: String) : RecyclerView.Adapter<EventAdapter.MyViewHolder>(){
+
+        val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+        val eventsRef: DatabaseReference = database.getReference("events")
+        val joinEventRef: DatabaseReference = database.getReference("JoinEvent")
+        var retreiveEventTitle : String = ""
+        var retreiveUserName : String = username
+        private var currentHolder: MyViewHolder? = null
 
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -27,21 +41,25 @@
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             val currentEvent = eventList[position]
+            currentHolder = holder
             // Load and display the image using Picasso
             if (!currentEvent.eventImage.isNullOrEmpty()) {
                 Glide.with(holder.itemView.context)
                     .load(currentEvent.eventImage)
                     .transition(DrawableTransitionOptions.withCrossFade()) // Optional transition animation
                     .into(holder.eventImage)
-            } else {
-                // Handle the case where there is no image URL or display a placeholder
-                // You can set a placeholder image or handle this case as needed.
-                // Picasso provides methods for setting placeholders and error images.
-                // Example: Picasso.get().load(R.drawable.placeholder_image).into(holder.eventImage)
             }
             //holder.eventImage.setImageResource(currentEvent.eventImage)
             holder.eventTitle.text = currentEvent.eventTitle
             holder.eventDate.text = currentEvent.eventDate
+            retreiveEventTitle = currentEvent.eventTitle
+
+            checkJoint(currentEvent.eventTitle)
+
+
+
+
+
 
             holder.interestedEvent.setOnClickListener {
                 Toast.makeText(holder.itemView.context, username,Toast.LENGTH_SHORT).show()
@@ -64,6 +82,42 @@
             eventList = ArrayList(searchList)
             notifyDataSetChanged()
         }
+
+        fun checkJoint(eventTitle: String) {
+            val joinEventRef: DatabaseReference = database.getReference("JoinEvent")
+            joinEventRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    var isAlreadyJoined = false // Flag to check if the user has already joined
+                    for (eventSnapshot in snapshot.children) {
+                        val joinEvent = eventSnapshot.getValue(UserJoinEventModel::class.java)
+                        if (joinEvent != null) {
+                            val eventId = joinEvent.eventName
+                            val existingUsername = joinEvent.username
+                            Log.d("Debug", "eventId: $eventId, eventTitle: $eventTitle, existingUsername: $existingUsername, username: $username")
+
+                            // Check if both eventId and username match
+                            if (eventId == eventTitle && existingUsername == username) {
+                                // You have already joined the event, set the flag and break
+                                isAlreadyJoined = true
+                                break
+                            }
+                        }
+                    }
+
+                    // Update the button text based on whether the user has joined the event or not
+                    if (isAlreadyJoined) {
+                        currentHolder?.interestedEvent?.text = "Joined Event"
+                    } else {
+                        currentHolder?.interestedEvent?.text = "Join Event"
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle the error
+                }
+            })
+        }
+
 
 
 

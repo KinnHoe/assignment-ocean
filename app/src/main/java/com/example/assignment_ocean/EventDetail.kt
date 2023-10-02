@@ -3,11 +3,14 @@ package com.example.assignment_ocean
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.bumptech.glide.Glide
 import com.example.assignment_ocean.data.EventModel
 import com.example.assignment_ocean.data.UserJoinEventModel
@@ -75,50 +78,60 @@ class EventDetail : AppCompatActivity() {
         }
 
 
-
+        checkJoin(eventTitle, username)
 
         // Set the click listener for the join event button
         joinEventBtn.setOnClickListener {
             val joinEventRef: DatabaseReference = database.getReference("JoinEvent")
-            if (joinEventBtn.text == "Join this Event") {
-                // User has not joined the event, so you can join here
-                val joinEvent = UserJoinEventModel(username, eventTitle)
+            joinEventRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    var isAlreadyJoined = false
+                    var joinEventKey: String? = null
+                    for (eventSnapshot in snapshot.children) {
+                        val joinEvent = eventSnapshot.getValue(UserJoinEventModel::class.java)
+                        if (joinEvent != null) {
+                            val eventId = joinEvent.eventName
+                            val existingUsername = joinEvent.username
+                            Log.d("Debug", "eventId: $eventId, eventTitle: $eventTitle, existingUsername: $existingUsername, username: $username")
 
-                // Set the value at the generated unique ID
-                val userEventRef = joinEventRef.push()
-                userEventRef.setValue(joinEvent).addOnSuccessListener {
-                    Toast.makeText(this@EventDetail, "Joined the event", Toast.LENGTH_SHORT).show()
-                    joinEventBtn.text = "Unjoin Event" // Change the button text
-                }.addOnFailureListener {
-                    Toast.makeText(this@EventDetail, "Failed to join", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                // User has already joined the event, so you can unjoin here
-                // Iterate through all events and find the one with matching username and eventTitle
-                joinEventRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        for (eventSnapshot in snapshot.children) {
-                            val joinEvent = eventSnapshot.getValue(UserJoinEventModel::class.java)
-                            if (joinEvent != null && joinEvent.username == username && joinEvent.eventName == eventTitle) {
-                                // Found the matching event, remove it
-                                eventSnapshot.ref.removeValue()
-                                Toast.makeText(this@EventDetail, "Unjoined the event", Toast.LENGTH_SHORT).show()
-                                joinEventBtn.text = "Join Event" // Change the button text
+
+
+                            // Check if both eventId and username match
+                            if (eventId == eventTitle && existingUsername == username) {
+                                // You have already joined the event, set the flag and break
+                                isAlreadyJoined = true
+                                joinEventKey = eventSnapshot.key
                                 break
                             }
                         }
                     }
 
-                    override fun onCancelled(error: DatabaseError) {
-                        // Handle any database errors here
-                        Toast.makeText(this@EventDetail, "Database error", Toast.LENGTH_SHORT).show()
+                    if (isAlreadyJoined) {
+                        // You have already joined the event, show a message
+                        deleteEvent(joinEventKey.toString())
+                        joinEventBtn.text = "join Event"
+
+                    } else {
+                        // User has not joined the event, so you can join here
+                        val joinEvent = UserJoinEventModel(username, eventTitle)
+
+                        // Set the value at the generated unique ID
+                        val userEventRef = joinEventRef.push()
+                        userEventRef.setValue(joinEvent).addOnSuccessListener {
+                            Toast.makeText(this@EventDetail, "Joined the event", Toast.LENGTH_SHORT).show()
+                            joinEventBtn.text = "Unjoin Event"
+                        }.addOnFailureListener {
+                            Toast.makeText(this@EventDetail, "Failed to join", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                })
-            }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle any database errors here
+                    Toast.makeText(this@EventDetail, "Database error", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
-
-
-
 
 
 
@@ -130,6 +143,77 @@ class EventDetail : AppCompatActivity() {
             intent.putExtra("username", username)
             startActivity(intent)
 
+        }
+    }
+
+
+
+
+    private fun deleteEvent(joinEventKey: String){
+        val joinEventBtn = findViewById<Button>(R.id.joinEvent)
+        val builder = AlertDialog.Builder(this)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_confirm_delete, null)
+        builder.setView(dialogView)
+        val dialog = builder.create()
+
+        val confirmButton = dialogView.findViewById<Button>(R.id.confirmDeleteButton)
+        val cancelButton = dialogView.findViewById<Button>(R.id.cancelDeleteButton)
+
+        confirmButton.setOnClickListener {
+            val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+            val joinEventRef: DatabaseReference = database.getReference("JoinEvent")
+            joinEventRef.child(joinEventKey).removeValue().addOnSuccessListener {
+
+                Toast.makeText(this, "You have unjoined this event", Toast.LENGTH_SHORT).show()
+            }.addOnFailureListener {
+                Toast.makeText(this, "Unable to delete", Toast.LENGTH_SHORT).show()
+            }
+            dialog.dismiss()
+        }
+
+        cancelButton.setOnClickListener {
+            joinEventBtn.text = "Unjoin Event"
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    private fun checkJoin(eventTitle: String?, username: String?) {
+        if (eventTitle != null && username != null) {
+            val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+            val joinEventRef: DatabaseReference = database.getReference("JoinEvent")
+            joinEventRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    var isAlreadyJoined = false // Flag to check if the user has already joined
+                    for (eventSnapshot in snapshot.children) {
+                        val joinEvent = eventSnapshot.getValue(UserJoinEventModel::class.java)
+                        if (joinEvent != null) {
+                            val eventId = joinEvent.eventName
+                            val existingUsername = joinEvent.username
+                            Log.d("Debug", "eventId: $eventId, eventTitle: $eventTitle, existingUsername: $existingUsername, username: $username")
+
+                            // Check if both eventId and username match
+                            if (eventId == eventTitle && existingUsername == username) {
+                                // You have already joined the event, set the flag and break
+                                isAlreadyJoined = true
+                                break
+                            }
+                        }
+                    }
+                    val joinEventBtn = findViewById<Button>(R.id.joinEvent)
+
+                    // Update the button text based on whether the user has joined the event or not
+                    if (isAlreadyJoined) {
+                        joinEventBtn.text = "Unjoin Event"
+                    } else {
+                        joinEventBtn.text = "Join Event"
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle any database errors here
+                }
+            })
         }
     }
 
