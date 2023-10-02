@@ -192,7 +192,7 @@ class AddEventActivity : AppCompatActivity() {
 
         // Check Firebase Database for existing event title
         val firebaseRef = FirebaseUtil().getEventsReference()
-        val eventTitleToCheck = eventTitle.toLowerCase(Locale.getDefault())
+        val eventTitleToCheck = eventTitle
 
         firebaseRef.orderByChild("eventTitle").equalTo(eventTitleToCheck)
             .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -201,7 +201,8 @@ class AddEventActivity : AppCompatActivity() {
                         // The event title already exists in Firebase
                         Toast.makeText(this@AddEventActivity, "Event title already exists", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(this@AddEventActivity,"Event title already exists",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@AddEventActivity,eventTitleToCheck.toString(),Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@AddEventActivity,"Event title not exists ",Toast.LENGTH_SHORT).show()
                         saveEventDataAndImage()
                     }
                 }
@@ -219,6 +220,7 @@ class AddEventActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this)
         builder.setCancelable(false)
         builder.setView(R.layout.progress_layout)
+
         val dialog = builder.create()
         dialog.show()
         storageReference.putFile(url!!).addOnSuccessListener { taskSnapshot ->
@@ -277,7 +279,6 @@ class AddEventActivity : AppCompatActivity() {
                 // Insert event data into Room Database
                 eventDao?.insertEvent(event)
                 runOnUiThread {
-                    Toast.makeText(this@AddEventActivity, "Event data inserted successfully", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 runOnUiThread {
